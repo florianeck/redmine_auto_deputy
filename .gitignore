@@ -6,7 +6,9 @@ capybara-*.html
 /db/*.sqlite3
 /db/*.sqlite3-journal
 /public/system
-/coverage/
+coverage/
+.DS_Store
+
 /spec/tmp
 **.orig
 rerun.txt
@@ -33,3 +35,5 @@ bower.json
 
 # Ignore pow environment settings
 .powenv
+
+
