@@ -31,11 +31,13 @@ RSpec.describe RedmineAutoDeputy::IssueExtension do
 
     context 'uses due_to date to find deputy' do
       let(:date)    { Time.now.to_date+1.week }
-      let(:issue)   { build_stubbed(:issue, assigned_to: user, due_date: date, project_id: 1) }
+      let(:issue)   { build(:issue, assigned_to: user, due_date: date, project_id: 1) }
       let(:user)    { build_stubbed(:user)}
       let(:deputy)  { build_stubbed(:user)}
 
       before do
+        # need to mock 'project_id' getter, as redmine does not allow to set the id directly
+        expect(issue).to receive(:project_id).and_return(1)
         expect(user).to receive(:available_at?).with(date).and_return false
         expect(user).to receive(:find_deputy).with(project_id: 1, date: date).and_return(deputy)
       end
@@ -49,16 +51,18 @@ RSpec.describe RedmineAutoDeputy::IssueExtension do
     context 'fails to find deputy' do
       let(:date)    { Time.now.to_date+1.week }
       let(:issue) { build_stubbed(:issue, assigned_to: user, project_id: 1, due_date: date) }
-      let(:user)  { build_stubbed(:user)}
+      let(:user)  { build_stubbed(:user, firstname: 'Max', lastname: 'Muster')}
 
       before do
+        # need to mock 'project_id' getter, as redmine does not allow to set the id directly
+        expect(issue).to receive(:project_id).and_return(1)
         expect(user).to receive(:available_at?).with(date).and_return false
         expect(user).to receive(:find_deputy).with(project_id: 1, date: date).and_return(nil)
       end
 
       specify do
         expect(issue.send(:check_assigned_user_availability)).to eq(false)
-        expect(issue.errors[:assigned_to]).not_to be_empty
+        expect(issue.errors[:assigned_to]).to include(I18n.t('activerecord.errors.issue.cant_be_assigned_due_to_unavailability', user_name: user.name, date: date.to_s))
       end
 
     end

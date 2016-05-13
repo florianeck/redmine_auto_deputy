@@ -1,2 +1,16 @@
 de:
   deputies: Verfügbarkeit/Vertretung
+  activerecord:
+    attribues:
+      user:
+        unavailable_from: Abwesend von
+        unavailable_to: Abwesend bis
+    errors:
+      user:
+        missing_unavailable_from: 'Erforderlich wenn "Abwesend bis" ausgefüllt ist'
+        missing_unavailable_to: 'Erforderlich wenn "Abwesend von" ausgefüllt ist'
+        unavailable_dates_in_past: '"Abwesend von/bis" darf nicht in der Vergangenheit liegen'
+        unavailable_to_before_from: '"Abwesend bis" darf nicht vor "Abwesend von" liegen'
+
+      issue:
+        cant_be_assigned_due_to_unavailability: 'Zuweisung an %{user_name} nicht möglich. Nicht verfügbar am %{date}'

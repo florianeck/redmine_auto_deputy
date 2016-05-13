@@ -19,7 +19,7 @@ module RedmineAutoDeputy::IssueExtension
         self.assigned_to = deputy
         return true
       else
-        self.errors.add(:assigned_to, "cant be assigned to ...")
+        self.errors.add(:assigned_to, I18n.t('activerecord.errors.issue.cant_be_assigned_due_to_unavailability', user_name: self.assigned_to.name, date: check_date.to_s))
         return false
       end
     end
