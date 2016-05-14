@@ -33,13 +33,16 @@ RSpec.describe RedmineAutoDeputy::IssueExtension do
       let(:date)    { Time.now.to_date+1.week }
       let(:issue)   { build(:issue, assigned_to: user, due_date: date, project_id: 1) }
       let(:user)    { build_stubbed(:user)}
-      let(:deputy)  { build_stubbed(:user)}
+      let(:deputy)  { build_stubbed(:user, firstname: 'Deputy')}
+
+      let(:user_deputy) { build_stubbed(:user_deputy, deputy: deputy)}
 
       before do
         # need to mock 'project_id' getter, as redmine does not allow to set the id directly
         expect(issue).to receive(:project_id).and_return(1)
         expect(user).to receive(:available_at?).with(date).and_return false
-        expect(user).to receive(:find_deputy).with(project_id: 1, date: date).and_return(deputy)
+        expect(user).to receive(:find_deputy).with(project_id: 1, date: date).and_return(user_deputy)
+        expect(issue).to receive_message_chain(:current_journal, 'notes=').with(I18n.t('issue_assigned_to_changed', new_name: deputy.name, original_name: user.name) )
       end
 
       specify do

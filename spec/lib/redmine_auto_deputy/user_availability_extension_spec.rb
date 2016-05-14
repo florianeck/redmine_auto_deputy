@@ -19,6 +19,11 @@ RSpec.describe RedmineAutoDeputy::UserAvailabilityExtension do
       let(:user) { build_stubbed(:user, unavailable_from: Time.now+1.day, unavailable_to: Time.now+2.days) }
       specify { expect(user.unavailablity_set?).to be(true) }
     end
+
+    context 'values in past' do
+      let(:user) { build_stubbed(:user, unavailable_from: Time.now-10.day, unavailable_to: Time.now-2.days) }
+      specify { expect(user.unavailablity_set?).to be(false) }
+    end
   end
 
   describe '#available_at?'do
@@ -35,6 +40,40 @@ RSpec.describe RedmineAutoDeputy::UserAvailabilityExtension do
     context 'without unavailablilty set' do
       let(:user) { build_stubbed(:user) }
       specify { expect(user.available_at?(Time.now)).to be(true)}
+    end
+  end
+
+  describe '#validate_unavailabilities' do
+    context 'unavailable_to set/unavailable_from not set' do
+      let(:user) { build_stubbed(:user, unavailable_to: Time.now+1.day)}
+      specify do
+        expect(user.send(:validate_unavailabilities)).to be(false)
+        expect(user.errors[:unavailable_from]).to eq([I18n.t('activerecord.errors.user.missing_unavailable_from')])
+      end
+    end
+
+    context 'unavailable_from set/unavailable_to not set' do
+      let(:user) { build_stubbed(:user, unavailable_from: Time.now+1.day)}
+      specify do
+        expect(user.send(:validate_unavailabilities)).to be(false)
+        expect(user.errors[:unavailable_to]).to eq([I18n.t('activerecord.errors.user.missing_unavailable_to')])
+      end
+    end
+
+    context 'unavailable_from in the past' do
+      let(:user) { build_stubbed(:user, unavailable_from: Time.now-2.day, unavailable_to: Time.now+1.day)}
+      specify do
+        expect(user.send(:validate_unavailabilities)).to be(false)
+        expect(user.errors[:unavailable_to]).to eq([I18n.t('activerecord.errors.user.unavailable_dates_in_past')])
+      end
+    end
+
+    context 'unavailable_to < unavailable_from' do
+      let(:user) { build_stubbed(:user, unavailable_from: Time.now+2.day, unavailable_to: Time.now+1.day)}
+      specify do
+        expect(user.send(:validate_unavailabilities)).to be(false)
+        expect(user.errors[:unavailable_to]).to eq([I18n.t('activerecord.errors.user.unavailable_to_before_from')])
+      end
     end
 
   end
