@@ -1,7 +1,6 @@
 de:
-  deputies: Verfügbarkeit/Vertretung
   activerecord:
-    attribues:
+    attributes:
       user_deputy:
         deputy: Vertretender Benutzer
         deputy_id: Vertretender Benutzer
@@ -20,6 +19,7 @@ de:
       issue:
         cant_be_assigned_due_to_unavailability: 'Zuweisung an %{user_name} nicht möglich. Nicht verfügbar am %{date}'
   # Views
+  deputies: Verfügbarkeit/Vertretung
   user_deputies:
     index:
       header: Verfügbarkeiten und Vertretung
@@ -39,7 +39,7 @@ de:
         labels:
           unavailable_from: Abwesend von
           unavailable_to: Abwesend bis
-          delete_unavailable: 'Abwesenheit löschen'
+          delete_availabilities: 'Abwesenheit löschen'
       links:
         delete: 'Löschen'
         move_up: 'Prio erhöhen'
@@ -47,7 +47,7 @@ de:
       current_deputies_available: 'Anzahl verfügbarer Vetretungen: %{count}'
       no_current_deputies: 'Derzeit sind keine Vetretungen vorhanden'
 
-      current_unavailability_info: 'Nicht verfügbar von %{from} bis %{to}'
+      current_unavailability_status: 'Nicht verfügbar von %{from} bis %{to}'
       no_current_unavailability: 'Derzeit liegt keine eingeschränkte Verfügbarkeit vor'
 
     create:
@@ -61,5 +61,12 @@ de:
         deleted: 'Eintrag wurde gelöscht'
       error:
         not_deleted: 'Eintrag konnte nicht gelöscht werden: %{errors}'
+
+    set_availabilities:
+      notice:
+        availabilities_cleared: 'Abwesenheit wurde zurückgesetzt'
+        saved: 'Abwesenheit wurde gespeichert'
+      error:
+        not_saved: 'Abwesenheit konnte nicht gespeichert werden: %{errors}'
 
 

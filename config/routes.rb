@@ -5,5 +5,9 @@ RedmineApp::Application.routes.draw do
       get :move_down
       get :delete
     end
+
+    collection do
+      post :set_availabilities
+    end
   end
 end
