@@ -20,6 +20,7 @@ de:
         cant_be_assigned_due_to_unavailability: 'Zuweisung an %{user_name} nicht möglich. Nicht verfügbar am %{date}'
   # Views
   deputies: Verfügbarkeit/Vertretung
+  issue_assigned_to_changed: "Aufgabe wurde automatisch an '%{new_name}' zugewiesen. Ursprünglich zugewiesen an '%{original_name}'"
   user_deputies:
     index:
       header: Verfügbarkeiten und Vertretung

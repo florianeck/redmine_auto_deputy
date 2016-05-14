@@ -10,13 +10,15 @@ module RedmineAutoDeputy::IssueExtension
     return if self.assigned_to.nil?
 
     check_date = self.due_date || Time.now.to_date
+    original_assigned = self.assigned_to
 
     if self.assigned_to.available_at?(check_date)
       return true
     else # => need to assign someone else
-      deputy = self.assigned_to.find_deputy(project_id: self.project_id, date: check_date)
-      if deputy
-        self.assigned_to = deputy
+      user_deputy = self.assigned_to.find_deputy(project_id: self.project_id, date: check_date)
+      if user_deputy
+        self.assigned_to = user_deputy.deputy
+        self.current_journal.notes = I18n.t('issue_assigned_to_changed', new_name: self.assigned_to.name, original_name: original_assigned.name)
         return true
       else
         self.errors.add(:assigned_to, I18n.t('activerecord.errors.issue.cant_be_assigned_due_to_unavailability', user_name: self.assigned_to.name, date: check_date.to_s))

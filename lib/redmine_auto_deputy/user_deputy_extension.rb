@@ -7,7 +7,7 @@ module RedmineAutoDeputy::UserDeputyExtension
 
   def find_deputy(project_id: nil, already_tried: [], date: Time.now.to_date)
     deputies = user_deputies.where(project_id: [nil, project_id].uniq ).where.not(deputy_id: already_tried)
-    deputies_available = deputies.select {|d| d.available_at?(date) }
+    deputies_available = deputies.select {|d| d.deputy.available_at?(date) }
 
     if deputies_available.any?
       return deputies_available.first
