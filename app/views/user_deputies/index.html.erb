@@ -1,0 +1,75 @@
+<div class="easy-content-page">
+  <%= title t('.header') %>
+
+  <h3><%= t('.sub_header.availabilities') %></h3>
+  <% if User.current.unavailablity_set? %>
+    <p><%= t('.current_deputies_available', count: @user_deputies.size) %></p>
+  <% else %>
+    <p><%= t('.no_current_unavailability') %></p>
+  <% end %>
+
+  <h3><%= t('.sub_header.deputies') %></h3>
+  <% if @user_deputies.any? %>
+    <p><%= t('.current_deputies_available', count: @user_deputies.size) %></p>
+  <% else %>
+    <p><%= t('.no_current_deputies') %></p>
+  <% end %>
+
+  <div id="deputy_list_container">
+    <table class="list">
+      <thead>
+        <th>
+        </th>
+        <th><%= t('.table_header.prio') %></th>
+        <th><%= t('.table_header.name') %></th>
+        <th><%= t('.table_header.project') %></th>
+      </thead>
+
+      <% @user_deputies.each do |user_deputy| %>
+        <tr>
+          <td>
+            <%= link_to image_tag('1downarrow.png'), move_down_user_deputy_path(user_deputy), title: t('.links.move_down') %>
+            <%= link_to image_tag('1uparrow.png'), move_up_user_deputy_path(user_deputy), title: t('.links.move_up') %>
+            <%= link_to image_tag('delete.png'), delete_user_deputy_path(user_deputy), { title: t('.links.delete') } %>
+          </td>
+          <td><%= user_deputy.prio %></td>
+          <td><%= user_deputy.deputy.name %></td>
+          <td><%= user_deputy.project.try(:name) %></td>
+        </tr>
+      <% end %>
+    </table>
+  </div>
+
+  <%= content_for :sidebar do %>
+
+    <%= form_for :user_availability, url: '#' do |f| %>
+      <h4><%= t('.sub_header.set_availability') %></h4>
+      <%= f.label :unavailable_from, t('.form.labels.unavailable_from') %><br />
+      <%= f.text_field :unavailable_from, :size => 10 %><%= calendar_for('user_availability_unavailable_from') %><br />
+
+      <%= f.label :unavailable_to,  t('.form.labels.unavailable_from') %><br />
+      <%= f.text_field :unavailable_to, :size => 10 %><%= calendar_for('user_availability_unavailable_to') %><br />
+
+      <%= f.label :delete, t('.form.labels.delete_unavailable') %> <%= f.checkbox :delete %>
+
+      <%= f.submit  t('.form.submit_availability'), class: 'button-positive' %>
+    <% end %>
+
+    <hr></hr>
+
+    <%= form_for UserDeputy.new do |f| %>
+      <h4><%= t('.sub_header.new_deputy') %></h4>
+      <%= f.label :deputy_id, UserDeputy.human_attribute_name(:deputy) %><br />
+      <%= f.select :deputy_id, @users.map {|u| [u.name, u.id]} %><br />
+      <%= f.label :project_id, UserDeputy.human_attribute_name(:project)  %><br />
+      <%= f.select :project_id, @projects.map {|u| [u.name, u.id]}, {include_blank: t('.form.all_projects')} %><br /><br />
+      <%= f.submit  t('.form.submit_deputy'), class: 'button-positive' %>
+    <% end %>
+
+  <% end %>
+</div>
+
+<%#  tweak for sidebar calender %>
+<style type="text/css">
+  #sidebar { z-index: 99 !important;}
+</style>

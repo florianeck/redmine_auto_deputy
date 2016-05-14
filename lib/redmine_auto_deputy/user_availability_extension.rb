@@ -7,7 +7,7 @@ module RedmineAutoDeputy::UserAvailabilityExtension
 
 
   def unavailablity_set?
-    unavailable_from.present? && unavailable_to.present?
+    unavailable_from.present? && unavailable_to.present? && unavailable_to > Time.now
   end
 
   def available_at?(date = Time.now.to_date)

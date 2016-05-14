@@ -2,6 +2,11 @@ de:
   deputies: Verfügbarkeit/Vertretung
   activerecord:
     attribues:
+      user_deputy:
+        deputy: Vertretender Benutzer
+        deputy_id: Vertretender Benutzer
+        project: Projekt
+        project_id: Projekt
       user:
         unavailable_from: Abwesend von
         unavailable_to: Abwesend bis
@@ -14,3 +19,47 @@ de:
 
       issue:
         cant_be_assigned_due_to_unavailability: 'Zuweisung an %{user_name} nicht möglich. Nicht verfügbar am %{date}'
+  # Views
+  user_deputies:
+    index:
+      header: Verfügbarkeiten und Vertretung
+      sub_header:
+        availabilities: Verfügbarkeiten
+        deputies: Vertretungen
+        new_deputy: Neue Vertretung eintragen
+        set_availability: Verfügbarkeiten anpassen
+      table_header:
+        prio: Prio
+        name: Name
+        project: Projekt
+      form:
+        all_projects: Gilt für alle Projekte
+        submit_deputy: 'Vertretung anlegen'
+        submit_availability: 'Abwesenheit speichern'
+        labels:
+          unavailable_from: Abwesend von
+          unavailable_to: Abwesend bis
+          delete_unavailable: 'Abwesenheit löschen'
+      links:
+        delete: 'Löschen'
+        move_up: 'Prio erhöhen'
+        move_down: 'Prio veringern'
+      current_deputies_available: 'Anzahl verfügbarer Vetretungen: %{count}'
+      no_current_deputies: 'Derzeit sind keine Vetretungen vorhanden'
+
+      current_unavailability_info: 'Nicht verfügbar von %{from} bis %{to}'
+      no_current_unavailability: 'Derzeit liegt keine eingeschränkte Verfügbarkeit vor'
+
+    create:
+      notice:
+        saved: 'Eintrag wurde gespeichert'
+      error:
+        not_saved: 'Eintrag konnte nicht gespeichert werden: %{errors}'
+
+    delete:
+      notice:
+        deleted: 'Eintrag wurde gelöscht'
+      error:
+        not_deleted: 'Eintrag konnte nicht gelöscht werden: %{errors}'
+
+
