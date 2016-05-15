@@ -64,7 +64,7 @@ run_tests() {
     TRACE=--trace
   fi
 
-  script -e -c "rspec $PATH_TO_PLUGINS/$PLUGIN/spec"
+  script -e -c "bundle exec rspec $PATH_TO_PLUGINS/$PLUGIN/spec"
 }
 
 uninstall() {
