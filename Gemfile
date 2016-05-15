@@ -1,9 +1,14 @@
 source 'https://rubygems.org'
 
-gem 'rspec-rails', '~> 3.0'
-gem "rspec"
-
 gem 'acts_as_list'
-gem "pry"
-gem 'factory_girl_rails'
 
+group :development, :test do
+  gem "pry"
+end
+
+group :test do
+  gem "simplecov", "~> 0.9.1"
+  gem 'rspec-rails', '~> 3.0'
+  gem "rspec"
+  gem 'factory_girl_rails'
+end
