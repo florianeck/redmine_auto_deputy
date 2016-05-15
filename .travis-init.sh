@@ -59,12 +59,12 @@ run_tests() {
   set -e
 
   cd $PATH_TO_REDMINE
-
+  cd $PATH_TO_PLUGINS/$PLUGIN
   if [ "$VERBOSE" = "yes" ]; then
     TRACE=--trace
   fi
 
-  script -e -c "rspec $PATH_TO_PLUGINS/$PLUGIN"
+  rspec
 }
 
 uninstall() {
@@ -102,6 +102,8 @@ run_install() {
   bundle exec rake redmine:load_default_data REDMINE_LANG=en $TRACE
   bundle exec rake $GENERATE_SECRET $TRACE
   bundle exec rake $MIGRATE_PLUGINS $TRACE
+
+  gem install rspec
 }
 
 while getopts :irtu opt
