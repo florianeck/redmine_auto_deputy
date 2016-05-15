@@ -1,6 +1,6 @@
 # Use SimpleCov
-require 'simplecov'
-SimpleCov.start
+#require 'simplecov'
+#SimpleCov.start
 
 # Loading rails environment
 require File.expand_path("../../../../config/environment", __FILE__)
