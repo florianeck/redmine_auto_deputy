@@ -5,7 +5,7 @@ class UserDeputy < ActiveRecord::Base
   belongs_to :project
 
   default_scope -> { order(:prio, :project_id) }
-
+  validates_presence_of :user_id, :deputy_id
   validates_uniqueness_of :deputy, :scope => [:user, :project]
 
   acts_as_list column: :prio, scope: :project

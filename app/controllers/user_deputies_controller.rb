@@ -9,13 +9,12 @@ class UserDeputiesController < ApplicationController
   end
 
   def create
-    d = UserDeputy.new(deputy_attributes)
-    if d.save
+    @deputy = UserDeputy.new(deputy_attributes)
+    if @deputy.save
       flash[:notice] = t('.notice.saved')
     else
-      flash[:error] = t('.error.not_saved', errors: d.errors.full_messages.to_sentence)
+      flash[:error] = t('.error.not_saved', errors: @deputy.errors.full_messages.to_sentence)
     end
-
     redirect_to action: :index
   end
 
