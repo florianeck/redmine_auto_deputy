@@ -2,7 +2,7 @@ require "spec_helper"
 RSpec.describe UserDeputiesController, type: :controller do
 
   let(:current_user) { create(:user) }
-  let(:user_deputy) { create(:user_deputy) }
+  let(:user_deputy) { create(:user_deputy, user_id: current_user.id) }
 
   before { allow(User).to receive(:current).and_return(current_user) }
 
@@ -51,7 +51,7 @@ RSpec.describe UserDeputiesController, type: :controller do
 
   describe '#move_up/#move_down' do
     context 'move_up' do
-      before { expect_any_instance_of(UserDeputy).to receive(:move_up).exactly(1).times }
+      before { expect_any_instance_of(UserDeputy).to receive(:move_higher).exactly(1).times }
       specify do
         get :move_up, id: user_deputy.id
         expect(response).to redirect_to(user_deputies_path)
@@ -59,9 +59,9 @@ RSpec.describe UserDeputiesController, type: :controller do
     end
 
     context 'move_down' do
-      before { expect_any_instance_of(UserDeputy).to receive(:move_down).exactly(1).times }
+      before { expect_any_instance_of(UserDeputy).to receive(:move_lower).exactly(1).times }
       specify do
-        get :move_up, id: user_deputy.id
+        get :move_down, id: user_deputy.id
         expect(response).to redirect_to(user_deputies_path)
       end
     end
@@ -85,10 +85,52 @@ RSpec.describe UserDeputiesController, type: :controller do
       specify do
         get :delete, id: user_deputy.id
 
-        expect(flash[:notice]).to eq(I18n.t('user_deputies.delete.error.not_deleted', errors: assigns[:deputy].errors.full_messages.to_sentence))
+        expect(flash[:error]).to eq(I18n.t('user_deputies.delete.error.not_deleted', errors: assigns[:user_deputy].errors.full_messages.to_sentence))
         expect(response).to redirect_to(user_deputies_path)
       end
     end
+  end
+
+  describe '#set_availabilities' do
+    context 'delete availabilities' do
+      before do
+        expect(current_user).to receive(:update_attributes).with(unavailable_from: nil, unavailable_to: nil).and_call_original
+      end
+
+      specify do
+        post :set_availabilities, user_availability: { delete_availabilities: "1" }
+        expect(flash[:notice]).to eq I18n.t('user_deputies.set_availabilities.notice.availabilities_cleared')
+        expect(response).to redirect_to(user_deputies_path)
+      end
+    end
+
+    context 'update availabilities' do
+      before do
+        expect(current_user).to receive(:update_attributes).with(unavailable_from: '01.01.2017', unavailable_to: '01.01.2018').and_call_original
+      end
+
+      specify do
+        post :set_availabilities, user_availability: { delete_availabilities: "0", unavailable_from: '01.01.2017', unavailable_to: '01.01.2018' }
+        expect(flash[:notice]).to eq I18n.t('user_deputies.set_availabilities.notice.saved')
+        expect(response).to redirect_to(user_deputies_path)
+      end
+    end
+
+    context 'fail to update availabilities' do
+      before do
+        expect(current_user).to receive(:update_attributes).with(unavailable_from: '01.01.2016', unavailable_to: '01.02.2016').and_call_original
+      end
+
+      specify do
+        post :set_availabilities, user_availability: { delete_availabilities: "0", unavailable_from: '01.01.2016', unavailable_to: '01.02.2016' }
+        expect(flash[:error]).to eq(I18n.t('user_deputies.set_availabilities.error.not_saved', errors: assigns[:user].errors.full_messages.to_sentence))
+        expect(response).to redirect_to(user_deputies_path)
+      end
+    end
+  end
+
+  after do
+    UserDeputy.delete_all
   end
 
 end

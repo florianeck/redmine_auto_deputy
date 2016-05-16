@@ -32,21 +32,21 @@ class UserDeputiesController < ApplicationController
     if @user_deputy.destroy
       flash[:notice] = t('.notice.deleted')
     else
-      flash[:error] = t('.error.not_deleted', errors: d.errors.full_messages.to_sentence )
+      flash[:error] = t('.error.not_deleted', errors: @user_deputy.errors.full_messages.to_sentence )
     end
     redirect_to action: :index
   end
 
   def set_availabilities
-    user = User.current
+    @user = User.current
 
     if availability_attributes.delete(:delete_availabilities) == "1"
-      user.update_attributes(unavailable_from: nil, unavailable_to: nil)
+      @user.update_attributes(unavailable_from: nil, unavailable_to: nil)
       flash[:notice] = t('.notice.availabilities_cleared')
-    elsif user.update_attributes(availability_attributes)
+    elsif @user.update_attributes(availability_attributes)
       flash[:notice] = t('.notice.saved')
     else
-      flash[:error] = t('.error.not_saved', errors: user.errors.full_messages.to_sentence )
+      flash[:error] = t('.error.not_saved', errors: @user.errors.full_messages.to_sentence )
     end
 
     redirect_to action: :index
