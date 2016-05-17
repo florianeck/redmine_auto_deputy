@@ -69,7 +69,9 @@
   <% end %>
 </div>
 
-<%#  tweak for sidebar calender %>
-<style type="text/css">
-  #sidebar { z-index: 99 !important;}
-</style>
+<%= content_for :header_tags do %>
+  <%#  tweak for sidebar calender %>
+  <style type="text/css">
+    #sidebar { z-index: 99 !important;}
+  </style>
+<% end %>
