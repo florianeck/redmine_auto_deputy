@@ -5,6 +5,9 @@ Redmine::Plugin.register :redmine_auto_deputy do
   version '0.1.0'
 
   menu :top_menu, :deputies, { :controller => 'user_deputies', :action => 'index' }, :caption => :deputies, if: Proc.new { User.current.logged? }, :html => {:class => 'icon icon-time'}
+
+  permission :have_deputies_and_availability, user_deputies: [:create, :index, :set_availabilities]
+
 end
 
 require "redmine_auto_deputy"
