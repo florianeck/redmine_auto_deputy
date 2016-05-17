@@ -47,7 +47,7 @@
       <%= f.label :unavailable_from, t('.form.labels.unavailable_from') %><br />
       <%= f.text_field :unavailable_from, :size => 10, value: User.current.unavailable_from %><%= calendar_for('user_availability_unavailable_from') %><br />
 
-      <%= f.label :unavailable_to,  t('.form.labels.unavailable_from') %><br />
+      <%= f.label :unavailable_to,  t('.form.labels.unavailable_to') %><br />
       <%= f.text_field :unavailable_to, :size => 10, value: User.current.unavailable_to %><%= calendar_for('user_availability_unavailable_to') %><br />
 
       <%= f.label :delete_availabilities, t('.form.labels.delete_availabilities') %> <%= f.check_box :delete_availabilities %>
