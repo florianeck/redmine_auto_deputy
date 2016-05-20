@@ -20,7 +20,8 @@ RSpec.describe UserDeputiesController, type: :controller do
 
       expect(assigns[:users].to_sql).to eq("SELECT `users`.* FROM `users` WHERE `users`.`type` IN ('User', 'AnonymousUser') AND `users`.`type` = 'User' AND (`users`.`id` != #{current_user.id})")
       expect(assigns[:projects].to_sql).to eq("SELECT `projects`.* FROM `projects` WHERE (((projects.status <> 9) AND ((projects.is_public = 1 AND projects.id NOT IN (SELECT project_id FROM members WHERE user_id = #{current_user.id})))))")
-      expect(assigns[:user_deputies].to_sql).to eq("SELECT `user_deputies`.* FROM `user_deputies` WHERE `user_deputies`.`user_id` = #{current_user.id}  ORDER BY `user_deputies`.`prio` ASC, `user_deputies`.`project_id` ASC")
+      expect(assigns[:user_deputies_with_projects].to_sql).to eq("SELECT `user_deputies`.* FROM `user_deputies` INNER JOIN `projects` ON `projects`.`id` = `user_deputies`.`project_id` WHERE (`user_deputies`.`project_id` IS NOT NULL) AND `user_deputies`.`user_id` = #{current_user.id}  ORDER BY projects.name ASC, `user_deputies`.`prio` ASC")
+      expect(assigns[:user_deputies_without_projects].to_sql).to eq("SELECT `user_deputies`.* FROM `user_deputies` WHERE `user_deputies`.`project_id` IS NULL AND `user_deputies`.`user_id` = #{current_user.id}  ORDER BY `user_deputies`.`prio` ASC")
     end
   end
 

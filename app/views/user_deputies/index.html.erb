@@ -9,8 +9,8 @@
   <% end %>
 
   <h3><%= t('.sub_header.deputies') %></h3>
-  <% if @user_deputies.any? %>
-    <p><%= t('.current_deputies_available', count: @user_deputies.size) %></p>
+  <% if [@user_deputies_with_projects, @user_deputies_without_projects].flatten.any? %>
+    <p><%= t('.current_deputies_available', count: [@user_deputies_with_projects, @user_deputies_without_projects].flatten.size) %></p>
   <% else %>
     <p><%= t('.no_current_deputies') %></p>
   <% end %>
@@ -22,10 +22,14 @@
         </th>
         <th><%= t('.table_header.prio') %></th>
         <th><%= t('.table_header.name') %></th>
-        <th><%= t('.table_header.project') %></th>
       </thead>
 
-      <% @user_deputies.each do |user_deputy| %>
+      <% [@user_deputies_with_projects, @user_deputies_without_projects].flatten.each do |user_deputy| %>
+        <% if user_deputy.prio == 1 %>
+          <tr>
+            <td colspan="3"><%= user_deputy.project.try(:name) || t('.form.all_projects') %></td>
+          </tr>
+        <% end %>
         <tr>
           <td>
             <%= link_to image_tag('1downarrow.png'), move_down_user_deputy_path(user_deputy), title: t('.links.move_down') %>
@@ -34,7 +38,6 @@
           </td>
           <td><%= user_deputy.prio %></td>
           <td><%= user_deputy.deputy.name %></td>
-          <td><%= user_deputy.project.try(:name) %></td>
         </tr>
       <% end %>
     </table>

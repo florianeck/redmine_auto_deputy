@@ -5,7 +5,8 @@ class UserDeputiesController < ApplicationController
   def index
     @users = User.where(type: 'User').where.not(id: User.current.id)
     @projects = Project.visible
-    @user_deputies = User.current.user_deputies
+    @user_deputies_with_projects    = UserDeputy.with_projects.where(:user_id => User.current.id)
+    @user_deputies_without_projects = UserDeputy.without_projects.where(:user_id => User.current.id)
   end
 
   def create
