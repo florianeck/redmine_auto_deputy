@@ -78,7 +78,7 @@ class UserDeputiesController < ApplicationController
       return true
     else
       flash[:error] = t('user_deputies.permission_denied')
-      redirect_to :back
+      redirect_to "/"
     end
   end
 
