@@ -3,7 +3,7 @@ RSpec.describe RedmineAutoDeputy::UserDeputyExtension do
 
   describe 'has_many :user_deputies' do
     let(:user) { build(:user, id: 1) }
-    specify { expect(user.user_deputies.to_sql).to eq("SELECT `user_deputies`.* FROM `user_deputies` WHERE `user_deputies`.`user_id` = 1  ORDER BY `user_deputies`.`prio` ASC, `user_deputies`.`project_id` ASC") }
+    specify { expect(user.user_deputies.to_sql).to eq("SELECT `user_deputies`.* FROM `user_deputies` WHERE `user_deputies`.`user_id` = 1  ORDER BY `user_deputies`.`project_id` DESC, `user_deputies`.`prio` ASC") }
   end
 
 

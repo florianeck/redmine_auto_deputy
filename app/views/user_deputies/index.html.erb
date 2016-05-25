@@ -1,16 +1,24 @@
 <div class="easy-content-page">
-  <%= title t('.header') %>
+  <%= title t('.header', user_name: @user.name) %>
+  <div style="text-align: right;">
+    <% if User.current.admin? %>
+      <%= t(".select_user") %>
+      <%= select_tag :user_id,
+        options_for_select(User.where(type: 'User').order(:lastname).map {|u| [u.name(:lastname_firstname), u.id]}, selected: @user.id),
+        onchange: "window.location='#{user_deputies_path}?user_id='+this.value" %>
+    <% end %>
+  </div>
 
   <h3><%= t('.sub_header.availabilities') %></h3>
-  <% if User.current.unavailablity_set? %>
-    <p><%= t('.current_unavailability_status', from: I18n.l(User.current.unavailable_from), to: I18n.l(User.current.unavailable_to)) %></p>
+  <% if @user.unavailablity_set? %>
+    <p><%= t('.current_unavailability_status', from: I18n.l(@user.unavailable_from), to: I18n.l(@user.unavailable_to)) %></p>
   <% else %>
     <p><%= t('.no_current_unavailability') %></p>
   <% end %>
 
   <h3><%= t('.sub_header.deputies') %></h3>
-  <% if @user_deputies.any? %>
-    <p><%= t('.current_deputies_available', count: @user_deputies.size) %></p>
+  <% if [@user_deputies_with_projects, @user_deputies_without_projects].flatten.any? %>
+    <p><%= t('.current_deputies_available', count: [@user_deputies_with_projects, @user_deputies_without_projects].flatten.size) %></p>
   <% else %>
     <p><%= t('.no_current_deputies') %></p>
   <% end %>
@@ -22,10 +30,14 @@
         </th>
         <th><%= t('.table_header.prio') %></th>
         <th><%= t('.table_header.name') %></th>
-        <th><%= t('.table_header.project') %></th>
       </thead>
 
-      <% @user_deputies.each do |user_deputy| %>
+      <% [@user_deputies_with_projects, @user_deputies_without_projects].flatten.each do |user_deputy| %>
+        <% if user_deputy.prio == 1 %>
+          <tr>
+            <td colspan="3"><%= user_deputy.project.try(:name) || t('.form.all_projects') %></td>
+          </tr>
+        <% end %>
         <tr>
           <td>
             <%= link_to image_tag('1downarrow.png'), move_down_user_deputy_path(user_deputy), title: t('.links.move_down') %>
@@ -34,7 +46,6 @@
           </td>
           <td><%= user_deputy.prio %></td>
           <td><%= user_deputy.deputy.name %></td>
-          <td><%= user_deputy.project.try(:name) %></td>
         </tr>
       <% end %>
     </table>
@@ -42,13 +53,13 @@
 
   <%= content_for :sidebar do %>
 
-    <%= form_for :user_availability, url: set_availabilities_user_deputies_path do |f| %>
+    <%= form_for :user_availability, url: set_availabilities_user_deputies_path(user_id: @user.id) do |f| %>
       <h4><%= t('.sub_header.set_availability') %></h4>
       <%= f.label :unavailable_from, t('.form.labels.unavailable_from') %><br />
-      <%= f.text_field :unavailable_from, :size => 10, value: User.current.unavailable_from %><%= calendar_for('user_availability_unavailable_from') %><br />
+      <%= f.text_field :unavailable_from, :size => 10, value: @user.unavailable_from %><%= calendar_for('user_availability_unavailable_from') %><br />
 
       <%= f.label :unavailable_to,  t('.form.labels.unavailable_to') %><br />
-      <%= f.text_field :unavailable_to, :size => 10, value: User.current.unavailable_to %><%= calendar_for('user_availability_unavailable_to') %><br />
+      <%= f.text_field :unavailable_to, :size => 10, value: @user.unavailable_to %><%= calendar_for('user_availability_unavailable_to') %><br />
 
       <%= f.label :delete_availabilities, t('.form.labels.delete_availabilities') %> <%= f.check_box :delete_availabilities %>
 
@@ -56,6 +67,19 @@
     <% end %>
 
     <hr></hr>
+
+    <% if User.current.admin? %>
+      <%= form_for :user_availability, url: set_permissions_user_deputies_path(user_id: @user.id) do |f| %>
+        <h4><%= t('.sub_header.permissions') %></h4>
+
+        <%= f.label :can_have_deputies, t('.form.labels.can_have_deputies') %> <%= f.check_box :can_have_deputies, checked: @user.admin? || @user.can_have_deputies? %>
+        <%= f.label :can_be_deputy, t('.form.labels.can_be_deputy') %> <%= f.check_box :can_be_deputy, checked: @user.admin? || @user.can_be_deputy? %>
+
+        <%= f.submit  t('.form.submit_permissions'), class: 'button-positive' %>
+      <% end %>
+
+      <hr></hr>
+    <% end %>
 
     <%= form_for UserDeputy.new do |f| %>
       <h4><%= t('.sub_header.new_deputy') %></h4>
@@ -73,5 +97,6 @@
   <%#  tweak for sidebar calender %>
   <style type="text/css">
     #sidebar { z-index: 99 !important;}
+    #ui-datepicker-div { z-index: 101 !important;}
   </style>
 <% end %>

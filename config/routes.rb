@@ -8,6 +8,7 @@ RedmineApp::Application.routes.draw do
 
     collection do
       post :set_availabilities
+      post :set_permissions
     end
   end
 end

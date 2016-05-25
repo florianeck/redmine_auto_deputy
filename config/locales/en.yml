@@ -22,13 +22,16 @@ en:
   deputies: Availability/Deputies
   issue_assigned_to_changed: "Issue was automatically assigned to '%{new_name}'. Orignally assigned to '%{original_name}'"
   user_deputies:
+    permission_denied: "This function is not available"
     index:
-      header: Availability/Deputies
+      header: 'Availability/Deputies (%{user_name})'
+      select_user: Select user
       sub_header:
         availabilities: Availability
         deputies: Deputies
         new_deputy: Add new Deputy
         set_availability: Adjust Availabilities
+        permissions: Permissions
       table_header:
         prio: Prio
         name: Name
@@ -37,10 +40,14 @@ en:
         all_projects: Valid for all projects
         submit_deputy: 'Create deputy'
         submit_availability: 'Save unvailabilities'
+        submit_permissions: 'Save permissions'
         labels:
           unavailable_from: Unvailable from
           unavailable_to: Unvailable to
           delete_availabilities: 'Clear unvailabilities'
+          can_have_deputies: 'Can have deputies'
+          can_be_deputy: 'Can be deputy'
+
       links:
         delete: 'Delete'
         move_up: 'Increase Prio'

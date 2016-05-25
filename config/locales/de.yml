@@ -22,13 +22,16 @@ de:
   deputies: Verfügbarkeit/Vertretung
   issue_assigned_to_changed: "Aufgabe wurde automatisch an '%{new_name}' zugewiesen. Ursprünglich zugewiesen an '%{original_name}'"
   user_deputies:
+    permission_denied: "Diese Funktion steht für Sie nicht zur Verfügung"
     index:
-      header: Verfügbarkeiten und Vertretung
+      header: 'Verfügbarkeiten und Vertretung (%{user_name})'
+      select_user: Benutzer wählen
       sub_header:
         availabilities: Verfügbarkeiten
         deputies: Vertretungen
         new_deputy: Neue Vertretung eintragen
         set_availability: Verfügbarkeiten anpassen
+        permissions: Rechte
       table_header:
         prio: Prio
         name: Name
@@ -37,10 +40,13 @@ de:
         all_projects: Gilt für alle Projekte
         submit_deputy: 'Vertretung anlegen'
         submit_availability: 'Abwesenheit speichern'
+        submit_permissions: 'Rechte speichern'
         labels:
           unavailable_from: Abwesend von
           unavailable_to: Abwesend bis
           delete_availabilities: 'Abwesenheit löschen'
+          can_have_deputies: 'Darf Vertetung benennen'
+          can_be_deputy: 'Darf als Vertretung benannt werden'
       links:
         delete: 'Löschen'
         move_up: 'Prio erhöhen'
