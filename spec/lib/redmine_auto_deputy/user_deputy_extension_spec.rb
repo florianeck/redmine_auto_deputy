@@ -6,6 +6,15 @@ RSpec.describe RedmineAutoDeputy::UserDeputyExtension do
     specify { expect(user.user_deputies.to_sql).to eq("SELECT `user_deputies`.* FROM `user_deputies` WHERE `user_deputies`.`user_id` = 1  ORDER BY `user_deputies`.`project_id` DESC, `user_deputies`.`prio` ASC") }
   end
 
+  describe 'scope :with_deputy_permission' do
+    before { expect(described_class).to receive(:roles_for).with(:edit_deputies).and_return([double(id: 1), double(id: 2)]) }
+    specify { expect(User.with_deputy_permission(:edit_deputies).to_sql).to eq("SELECT `users`.* FROM `users` INNER JOIN `members` ON `members`.`user_id` = `users`.`id` INNER JOIN `member_roles` ON `member_roles`.`member_id` = `members`.`id` INNER JOIN `roles` ON `roles`.`id` = `member_roles`.`role_id` WHERE `users`.`type` IN ('User', 'AnonymousUser') AND `member_roles`.`role_id` IN (1, 2)")}
+  end
+
+
+  specify '.roles_for' do
+    expect(described_class.roles_for(:edit_deputies).to_sql).to eq("SELECT `roles`.* FROM `roles` WHERE (`roles`.`permissions` LIKE '%edit_deputies%')")
+  end
 
   describe '#find_deputy' do
 

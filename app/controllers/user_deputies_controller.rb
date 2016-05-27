@@ -4,7 +4,7 @@ class UserDeputiesController < ApplicationController
   before_filter :get_entry, except: [:index, :set_availabilities]
 
   def index
-    @users = User.with_deputy_permission(:be_deputy)
+    @users = User.with_deputy_permission(:be_deputy).where.not(id: @user.id)
     @projects = Project.visible
     @user_deputies_with_projects    = UserDeputy.with_projects.where(:user_id => User.current.id)
     @user_deputies_without_projects = UserDeputy.without_projects.where(:user_id => User.current.id)
@@ -52,11 +52,6 @@ class UserDeputiesController < ApplicationController
     redirect_to action: :index
   end
 
-  def set_permissions
-    @user.update_columns(availability_attributes)
-    redirect_to action: :index
-  end
-
   private
 
   def get_entry
@@ -73,7 +68,7 @@ class UserDeputiesController < ApplicationController
   end
 
   def check_permission
-    if User.current.allowed_to_globally?(:have_deputies)
+    if User.current.allowed_to_globally?(:have_deputies) || User.current.allowed_to_globally?(:edit_deputies)
       return true
     else
       flash[:error] = t('user_deputies.permission_denied')
