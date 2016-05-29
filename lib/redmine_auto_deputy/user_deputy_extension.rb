@@ -3,6 +3,17 @@ module RedmineAutoDeputy::UserDeputyExtension
 
   included do
     has_many :user_deputies, class_name: 'UserDeputy', foreign_key: :user_id
+    has_many :memberships, class_name: 'Member', foreign_key: :user_id
+    has_many :roles, through: :memberships
+
+    scope :with_deputy_permission, -> (permission_name) {
+      joins(:roles)
+      .where("member_roles.role_id" => RedmineAutoDeputy::UserDeputyExtension.roles_for(permission_name).map(&:id))
+    }
+  end
+
+  def self.roles_for(permission_name)
+    Role.where("`roles`.`permissions` LIKE '%#{permission_name}%'")
   end
 
   def find_deputy(project_id: nil, already_tried: [self.id], date: Time.now.to_date)

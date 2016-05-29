@@ -1,10 +1,10 @@
 <div class="easy-content-page">
   <%= title t('.header', user_name: @user.name) %>
   <div style="text-align: right;">
-    <% if User.current.admin? %>
+    <% if User.current.allowed_to_globally?(:edit_deputies) %>
       <%= t(".select_user") %>
       <%= select_tag :user_id,
-        options_for_select(User.where(type: 'User').order(:lastname).map {|u| [u.name(:lastname_firstname), u.id]}, selected: @user.id),
+        options_for_select(User.with_deputy_permission(:have_deputies).order(:lastname).map {|u| [u.name(:lastname_firstname), u.id]}, selected: @user.id),
         onchange: "window.location='#{user_deputies_path}?user_id='+this.value" %>
     <% end %>
   </div>
@@ -68,23 +68,10 @@
 
     <hr></hr>
 
-    <% if User.current.admin? %>
-      <%= form_for :user_availability, url: set_permissions_user_deputies_path(user_id: @user.id) do |f| %>
-        <h4><%= t('.sub_header.permissions') %></h4>
-
-        <%= f.label :can_have_deputies, t('.form.labels.can_have_deputies') %> <%= f.check_box :can_have_deputies, checked: @user.admin? || @user.can_have_deputies? %>
-        <%= f.label :can_be_deputy, t('.form.labels.can_be_deputy') %> <%= f.check_box :can_be_deputy, checked: @user.admin? || @user.can_be_deputy? %>
-
-        <%= f.submit  t('.form.submit_permissions'), class: 'button-positive' %>
-      <% end %>
-
-      <hr></hr>
-    <% end %>
-
     <%= form_for UserDeputy.new do |f| %>
       <h4><%= t('.sub_header.new_deputy') %></h4>
       <%= f.label :deputy_id, UserDeputy.human_attribute_name(:deputy) %><br />
-      <%= f.select :deputy_id, @users.map {|u| [u.name, u.id]} %><br />
+      <%= f.select :deputy_id, @users.order(:lastname).map {|u| [u.name(:lastname_firstname), u.id]} %><br />
       <%= f.label :project_id, UserDeputy.human_attribute_name(:project)  %><br />
       <%= f.select :project_id, @projects.map {|u| [u.name, u.id]}, {include_blank: t('.form.all_projects')} %><br /><br />
       <%= f.submit  t('.form.submit_deputy'), class: 'button-positive' %>

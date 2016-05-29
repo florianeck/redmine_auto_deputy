@@ -1,6 +1,9 @@
+ENV['RAILS_ENV'] ||= 'test'
 # Use SimpleCov
 require 'simplecov'
-SimpleCov.start
+SimpleCov.start do
+   add_filter 'spec/'
+end
 
 # Loading rails environment
 require File.expand_path("../../../../config/environment", __FILE__)
