@@ -1,4 +1,7 @@
 de:
+  permission_have_deputies: 'Darf Vertretung haben'
+  permission_edit_deputies: 'Darf Vertretungen anpassen'
+  permission_be_deputy: 'Darf Vertretungen sein'
   activerecord:
     attributes:
       user_deputy:

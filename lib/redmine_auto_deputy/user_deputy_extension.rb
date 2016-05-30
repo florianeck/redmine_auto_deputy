@@ -8,7 +8,7 @@ module RedmineAutoDeputy::UserDeputyExtension
 
     scope :with_deputy_permission, -> (permission_name) {
       joins(:roles)
-      .where("member_roles.role_id" => RedmineAutoDeputy::UserDeputyExtension.roles_for(permission_name).map(&:id))
+      .where("member_roles.role_id" => RedmineAutoDeputy::UserDeputyExtension.roles_for(permission_name).map(&:id)).group(:id)
     }
   end
 
