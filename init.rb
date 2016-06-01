@@ -6,9 +6,9 @@ Redmine::Plugin.register :redmine_auto_deputy do
 
   menu :top_menu, :deputies, { :controller => 'user_deputies', :action => 'index' }, :caption => :deputies, if: Proc.new { User.current.logged? && User.current.allowed_to_globally?(:have_deputies) }, :html => {:class => 'icon icon-time'}
 
-  permission :edit_deputies, {}, :global => true
-  permission :have_deputies, {}, :global => true
-  permission :be_deputy, {}, :global => true
+  permission :edit_deputies, { user_deputies: [:index, :move_up, :move_down, :create, :delete, :set_availabilities] }, :global => true, :read => true
+  permission :have_deputies, {  user_deputies: [:index, :move_up, :move_down, :create, :delete, :set_availabilities] }, :global => true, :read => true
+  permission :be_deputy,     { user_deputies: [] }, :global => true, :read => true
 
 end
 
