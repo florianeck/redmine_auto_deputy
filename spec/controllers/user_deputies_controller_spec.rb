@@ -10,7 +10,7 @@ RSpec.describe UserDeputiesController, type: :controller do
     let(:filter) { described_class._process_action_callbacks.select {|c| c.filter == :get_entry }.first }
     specify ':get_entry, except: [:index, :set_availabilities]' do
       expect(filter.kind).to eq(:before)
-      expect(filter.instance_variable_get('@unless')).to eq(["action_name == 'index' || action_name == 'set_availabilities'"])
+      expect(filter.instance_variable_get('@unless')).to eq(["action_name == 'index' || action_name == 'set_availabilities' || action_name == 'projects_for_user'"])
     end
   end
 
@@ -192,6 +192,18 @@ RSpec.describe UserDeputiesController, type: :controller do
         expect(flash[:error]).to eq(I18n.t('user_deputies.set_availabilities.error.not_saved', errors: assigns[:user].errors.full_messages.to_sentence))
         expect(response).to redirect_to(user_deputies_path)
       end
+    end
+  end
+
+  describe '#projects_for_user' do
+    let(:projects) { [double(:project, id: 1, name: 'Project')] }
+    before { expect_any_instance_of(User).to receive(:projects_with_be_deputy_permission).and_return(projects) }
+
+    specify do
+      get :projects_for_user, user_id: current_user.id
+      expect(assigns[:user]).to eq(current_user)
+      expect(assigns[:projects]).to eq(projects)
+      expect(response).to render_template(partial: 'user_deputies/project_selector')
     end
   end
 

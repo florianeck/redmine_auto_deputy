@@ -96,4 +96,35 @@ RSpec.describe RedmineAutoDeputy::UserDeputyExtension do
     end
   end
 
+
+  context 'project permission finders' do
+    let(:user) { build(:user, id: 1) }
+
+    describe '#projects_with_have_deputies_permission' do
+      before do
+        expect(Project).to receive(:allowed_to_condition).with(user, :have_deputies).and_return('1 = 0')
+      end
+
+      specify { expect(user.projects_with_have_deputies_permission.to_sql).to eq("SELECT `projects`.* FROM `projects` WHERE (1 = 0)") }
+    end
+
+    describe  '#can_have_deputies_for_project?' do
+      before { expect(user).to receive_message_chain(:projects_with_have_deputies_permission, :pluck).with(:id).and_return([1]) }
+      specify { expect(user.can_have_deputies_for_project?(1)).to be(true)}
+    end
+
+    describe '#projects_with_be_deputy_permission' do
+      before do
+        expect(Project).to receive(:allowed_to_condition).with(user, :be_deputy).and_return('1 = 0')
+      end
+
+      specify { expect(user.projects_with_be_deputy_permission.to_sql).to eq("SELECT `projects`.* FROM `projects` WHERE (1 = 0)") }
+    end
+
+    describe  '#can_be_deputy_for_project?' do
+      before { expect(user).to receive_message_chain(:projects_with_be_deputy_permission, :pluck).with(:id).and_return([1]) }
+      specify { expect(user.can_be_deputy_for_project?(1)).to be(true)}
+    end
+  end
+
 end
