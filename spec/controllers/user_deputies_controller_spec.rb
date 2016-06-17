@@ -17,9 +17,12 @@ RSpec.describe UserDeputiesController, type: :controller do
   describe '#index' do
 
     context 'user is allowed' do
+      let(:projects) { double }
+
       before do
         expect(current_user).to receive(:allowed_to_globally?).with(:have_deputies).and_return(true)
         expect(current_user).to receive(:allowed_to_globally?).with(:edit_deputies).and_return(false)
+        expect_any_instance_of(User).to receive(:projects_with_have_deputies_permission).and_return(projects)
         expect(RedmineAutoDeputy::UserDeputyExtension).to receive(:roles_for).with(:be_deputy).and_return([double(id: 1), double(id: 2)])
       end
 
@@ -28,7 +31,7 @@ RSpec.describe UserDeputiesController, type: :controller do
 
         expect(assigns[:users].to_sql).to eq("SELECT `users`.* FROM `users` INNER JOIN `members` ON `members`.`user_id` = `users`.`id` INNER JOIN `member_roles` ON `member_roles`.`member_id` = `members`.`id` INNER JOIN `roles` ON `roles`.`id` = `member_roles`.`role_id` WHERE `users`.`type` IN ('User', 'AnonymousUser') AND `member_roles`.`role_id` IN (1, 2) AND (`users`.`id` != #{current_user.id}) GROUP BY `users`.`id`")
         expect(assigns[:user]).to eq(current_user)
-        expect(assigns[:projects].to_sql).to eq("SELECT `projects`.* FROM `projects` WHERE (((projects.status <> 9) AND ((projects.is_public = 1 AND projects.id NOT IN (SELECT project_id FROM members WHERE user_id = #{current_user.id})))))")
+        expect(assigns[:projects]).to eq(projects)
         expect(assigns[:user_deputies_with_projects].to_sql).to eq("SELECT `user_deputies`.* FROM `user_deputies` INNER JOIN `projects` ON `projects`.`id` = `user_deputies`.`project_id` WHERE (`user_deputies`.`project_id` IS NOT NULL) AND `user_deputies`.`user_id` = #{current_user.id}  ORDER BY projects.name ASC, `user_deputies`.`prio` ASC")
         expect(assigns[:user_deputies_without_projects].to_sql).to eq("SELECT `user_deputies`.* FROM `user_deputies` WHERE `user_deputies`.`project_id` IS NULL AND `user_deputies`.`user_id` = #{current_user.id}  ORDER BY `user_deputies`.`prio` ASC")
       end

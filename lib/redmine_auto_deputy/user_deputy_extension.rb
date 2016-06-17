@@ -17,8 +17,13 @@ module RedmineAutoDeputy::UserDeputyExtension
   end
 
   def find_deputy(project_id: nil, already_tried: [self.id], date: Time.now.to_date)
+    # if project id given, first check if the given project allows user to have deputy
+    return if (project_id.present? && !can_have_deputies_for_project?(project_id))
+
     deputies = user_deputies.where(project_id: [nil, project_id].uniq ).where.not(deputy_id: already_tried)
-    deputies_available = deputies.select {|d| d.deputy.available_at?(date) }
+    deputies_available = deputies.select do |d|
+      d.deputy.available_at?(date) && d.deputy.can_be_deputy_for_project?(project_id)
+    end
 
     if deputies_available.any?
       return deputies_available.first
@@ -27,6 +32,22 @@ module RedmineAutoDeputy::UserDeputyExtension
     else
       return nil
     end
+  end
+
+  def projects_with_have_deputies_permission
+    Project.where(Project.allowed_to_condition(self, :have_deputies))
+  end
+
+  def can_have_deputies_for_project?(project_id)
+    projects_with_have_deputies_permission.pluck(:id).include?(project_id)
+  end
+
+  def projects_with_be_deputy_permission
+    Project.where(Project.allowed_to_condition(self, :be_deputy))
+  end
+
+  def can_be_deputy_for_project?(project_id)
+    project_id.nil? || projects_with_be_deputy_permission.pluck(:id).include?(project_id)
   end
 
 end
