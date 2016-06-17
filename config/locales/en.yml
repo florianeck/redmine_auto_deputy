@@ -41,6 +41,7 @@ en:
         submit_deputy: 'Create deputy'
         submit_availability: 'Save unvailabilities'
         submit_permissions: 'Save permissions'
+        select_deputy: "Please select Deputy"
         labels:
           unavailable_from: Unvailable from
           unavailable_to: Unvailable to

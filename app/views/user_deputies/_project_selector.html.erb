@@ -1,0 +1,4 @@
+<%= fields_for UserDeputy.new do |f| %>
+  <%= f.label :project_id, UserDeputy.human_attribute_name(:project)  %><br />
+  <%= f.select :project_id, @projects.map {|p| [p.name, p.id]}, {include_blank: t('user_deputies.index.form.all_projects')} %><br /><br />
+<% end %>

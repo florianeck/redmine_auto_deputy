@@ -71,9 +71,8 @@
     <%= form_for UserDeputy.new do |f| %>
       <h4><%= t('.sub_header.new_deputy') %></h4>
       <%= f.label :deputy_id, UserDeputy.human_attribute_name(:deputy) %><br />
-      <%= f.select :deputy_id, @users.order(:lastname).map {|u| [u.name(:lastname_firstname), u.id]} %><br />
-      <%= f.label :project_id, UserDeputy.human_attribute_name(:project)  %><br />
-      <%= f.select :project_id, @projects.map {|u| [u.name, u.id]}, {include_blank: t('.form.all_projects')} %><br /><br />
+      <%= f.select :deputy_id, @users.order(:lastname).map {|u| [u.name(:lastname_firstname), u.id]}, include_blank: true %><br />
+      <div id="deputy-project-select"><%= t('.form.select_deputy') %></div>
       <%= f.submit  t('.form.submit_deputy'), class: 'button-positive' %>
     <% end %>
 
@@ -86,4 +85,24 @@
     #sidebar { z-index: 99 !important;}
     #ui-datepicker-div { z-index: 101 !important;}
   </style>
+
+  <%# JS for reloading projects %>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $('#user_deputy_deputy_id').bind('change', function(){
+        if($(this).val() == ''){
+          alert("<%= t('.form.select_deputy') %>")
+        }else{
+          $.ajax({
+            url: "<%= projects_for_user_user_deputies_path %>",
+            type: "GET",
+            data: {user_id: $(this).val() },
+            success: function(data){
+              $('#deputy-project-select').html(data)
+            }
+          })
+        }
+      });
+    });
+  </script>
 <% end %>

@@ -44,6 +44,7 @@ de:
         submit_deputy: 'Vertretung anlegen'
         submit_availability: 'Abwesenheit speichern'
         submit_permissions: 'Rechte speichern'
+        select_deputy: "Bitte vertretenden Benutzer wählen"
         labels:
           unavailable_from: Abwesend von
           unavailable_to: Abwesend bis

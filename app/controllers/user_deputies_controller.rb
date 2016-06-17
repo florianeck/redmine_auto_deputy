@@ -1,7 +1,7 @@
 class UserDeputiesController < ApplicationController
 
-  before_filter :check_permission, :get_user
-  before_filter :get_entry, except: [:index, :set_availabilities]
+  before_filter :check_permission, :get_user, except: [:projects_for_user_user_deputies]
+  before_filter :get_entry, except: [:index, :set_availabilities, :projects_for_user_user_deputies]
 
   def index
     @users = User.with_deputy_permission(:be_deputy).where.not(id: @user.id)
@@ -50,6 +50,12 @@ class UserDeputiesController < ApplicationController
     end
 
     redirect_to action: :index
+  end
+
+  def projects_for_user
+    @user = User.find(params[:user_id])
+    @projects = @user.projects_with_be_deputy_permission
+    render partial: "/user_deputies/project_selector"
   end
 
   private
