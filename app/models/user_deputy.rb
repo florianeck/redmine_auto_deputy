@@ -13,4 +13,12 @@ class UserDeputy < ActiveRecord::Base
 
   acts_as_list column: :prio, scope: :project
 
+  def enable!
+    self.update_attributes(disabled: false, disabled_at: nil)
+  end
+
+  def disable!
+    self.update_attributes(disabled: true, disabled_at: Time.now)
+  end
+
 end
