@@ -29,7 +29,7 @@ RSpec.describe UserDeputiesController, type: :controller do
       specify do
         get :index
 
-        expect(assigns[:users].to_sql).to eq("SELECT `users`.* FROM `users` INNER JOIN `members` ON `members`.`user_id` = `users`.`id` INNER JOIN `member_roles` ON `member_roles`.`member_id` = `members`.`id` INNER JOIN `roles` ON `roles`.`id` = `member_roles`.`role_id` WHERE `users`.`type` IN ('User', 'AnonymousUser') AND `member_roles`.`role_id` IN (1, 2) AND (`users`.`id` != #{current_user.id}) GROUP BY `users`.`id`")
+        expect(assigns[:users].to_sql).to eq("SELECT `users`.* FROM `users` INNER JOIN `members` ON `members`.`user_id` = `users`.`id` INNER JOIN `member_roles` ON `member_roles`.`member_id` = `members`.`id` INNER JOIN `roles` ON `roles`.`id` = `member_roles`.`role_id` WHERE `users`.`type` IN ('User', 'AnonymousUser') AND `member_roles`.`role_id` IN (1, 2) AND (`users`.`id` != #{current_user.id}) AND `users`.`status` = #{User::STATUS_ACTIVE} GROUP BY `users`.`id`")
         expect(assigns[:user]).to eq(current_user)
         expect(assigns[:projects]).to eq(projects)
         expect(assigns[:user_deputies_with_projects].to_sql).to eq("SELECT `user_deputies`.* FROM `user_deputies` INNER JOIN `projects` ON `projects`.`id` = `user_deputies`.`project_id` WHERE (`user_deputies`.`project_id` IS NOT NULL) AND `user_deputies`.`user_id` = #{current_user.id}  ORDER BY projects.name ASC, `user_deputies`.`prio` ASC")

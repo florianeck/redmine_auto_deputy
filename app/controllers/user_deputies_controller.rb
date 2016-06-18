@@ -4,7 +4,7 @@ class UserDeputiesController < ApplicationController
   before_filter :get_entry, except: [:index, :set_availabilities, :projects_for_user]
 
   def index
-    @users = User.with_deputy_permission(:be_deputy).where.not(id: @user.id)
+    @users = User.with_deputy_permission(:be_deputy).where.not(id: @user.id).status(User::STATUS_ACTIVE)
     @projects =  @user.projects_with_have_deputies_permission
     @user_deputies_with_projects    = UserDeputy.with_projects.where(:user_id => User.current.id)
     @user_deputies_without_projects = UserDeputy.without_projects.where(:user_id => User.current.id)
