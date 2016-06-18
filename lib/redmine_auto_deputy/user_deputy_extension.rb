@@ -21,8 +21,15 @@ module RedmineAutoDeputy::UserDeputyExtension
     return if (project_id.present? && !can_have_deputies_for_project?(project_id))
 
     deputies = user_deputies.where(project_id: [nil, project_id].uniq ).where.not(deputy_id: already_tried)
-    deputies_available = deputies.select do |d|
-      d.deputy.available_at?(date) && d.deputy.can_be_deputy_for_project?(project_id)
+
+    deputies_available = []
+
+    deputies.each do |d|
+      if d.deputy.available_at?(date) && d.deputy.can_be_deputy_for_project?(project_id)
+        deputies_available << d
+      elsif !d.deputy.can_be_deputy_for_project?(project_id) && !d.disabled?
+        d.disable!
+      end
     end
 
     if deputies_available.any?
