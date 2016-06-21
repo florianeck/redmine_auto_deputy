@@ -40,7 +40,7 @@ de:
         name: Name
         project: Projekt
       form:
-        all_projects: Gilt für alle Projekte
+        all_projects: Gilt für alle aktivierten Projekte
         submit_deputy: 'Vertretung anlegen'
         submit_availability: 'Abwesenheit speichern'
         submit_permissions: 'Rechte speichern'

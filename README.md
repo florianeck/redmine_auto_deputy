@@ -14,6 +14,12 @@ The User can set an unavailable_from/unavailable_to date. An Issue cant be assig
 
 An user can have a set of other users that will act as deputies if the user not available. These can be created for an specific project or for this user in general
 
+### Permissions within the Projects
+In Order to use the Deputy System, the following things need to be set up:
+
+- Enable "User Deputies" Module for the Project
+- Assign the according rights (Have Deputies / Be Deuputy) to your project members via Roles
+
 ## Info
 
 This Plugin was created by Florian Eck for akquinet GmbH.

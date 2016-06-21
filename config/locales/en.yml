@@ -37,7 +37,7 @@ en:
         name: Name
         project: Project
       form:
-        all_projects: Valid for all projects
+        all_projects: Valid for all enabled projects
         submit_deputy: 'Create deputy'
         submit_availability: 'Save unvailabilities'
         submit_permissions: 'Save permissions'

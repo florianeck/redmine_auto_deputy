@@ -4,7 +4,7 @@
     <% if User.current.allowed_to_globally?(:edit_deputies) %>
       <%= t(".select_user") %>
       <%= select_tag :user_id,
-        options_for_select(User.with_deputy_permission(:have_deputies).order(:lastname).map {|u| [u.name(:lastname_firstname), u.id]}, selected: @user.id),
+        options_for_select(User.with_deputy_permission(:have_deputies).status(User::STATUS_ACTIVE).order(:lastname).map {|u| [u.name(:lastname_firstname), u.id]}, selected: @user.id),
         onchange: "window.location='#{user_deputies_path}?user_id='+this.value" %>
     <% end %>
   </div>
