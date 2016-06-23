@@ -26,6 +26,7 @@ en:
     index:
       header: 'Availability/Deputies (%{user_name})'
       select_user: Select user
+      disabled: disabled
       sub_header:
         availabilities: Availability
         deputies: Deputies

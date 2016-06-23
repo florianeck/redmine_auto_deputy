@@ -9,7 +9,7 @@ class UserDeputy < ActiveRecord::Base
   scope :without_projects, -> { unscoped.order(:prio).where(project_id: nil) }
 
   validates_presence_of :user_id, :deputy_id
-  validates_uniqueness_of :deputy, :scope => [:user, :project]
+  validates_uniqueness_of :deputy, :scope => [:user, :project], on: :create
 
   acts_as_list column: :prio, scope: :project
 

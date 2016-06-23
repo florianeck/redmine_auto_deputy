@@ -26,6 +26,10 @@ module RedmineAutoDeputy::UserDeputyExtension
 
     deputies.each do |d|
       if d.deputy.available_at?(date) && d.deputy.can_be_deputy_for_project?(project_id)
+        if d.disabled?
+          d.enable!
+        end
+
         deputies_available << d
       elsif !d.deputy.can_be_deputy_for_project?(project_id) && !d.disabled?
         d.disable!

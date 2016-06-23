@@ -29,6 +29,7 @@ de:
     index:
       header: 'Verfügbarkeiten und Vertretung (%{user_name})'
       select_user: Benutzer wählen
+      disabled: deaktiviert
       sub_header:
         availabilities: Verfügbarkeiten
         deputies: Vertretungen

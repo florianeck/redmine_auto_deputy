@@ -40,11 +40,19 @@
         <% end %>
         <tr>
           <td>
-            <%= link_to image_tag('1downarrow.png'), move_down_user_deputy_path(user_deputy), title: t('.links.move_down') %>
-            <%= link_to image_tag('1uparrow.png'), move_up_user_deputy_path(user_deputy), title: t('.links.move_up') %>
+            <% if !user_deputy.disabled? %>
+              <%= link_to image_tag('1downarrow.png'), move_down_user_deputy_path(user_deputy), title: t('.links.move_down') %>
+              <%= link_to image_tag('1uparrow.png'), move_up_user_deputy_path(user_deputy), title: t('.links.move_up') %>
+            <% end %>
             <%= link_to image_tag('delete.png'), delete_user_deputy_path(user_deputy), { title: t('.links.delete') } %>
           </td>
-          <td><%= user_deputy.prio %></td>
+          <td>
+            <% if user_deputy.disabled? %>
+              <%= t(".disabled") %>
+            <% else %>
+              <%= user_deputy.prio %>
+            <% end %>
+          </td>
           <td><%= user_deputy.deputy.name %></td>
         </tr>
       <% end %>

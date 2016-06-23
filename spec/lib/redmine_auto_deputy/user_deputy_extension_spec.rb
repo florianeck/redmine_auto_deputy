@@ -53,7 +53,7 @@ RSpec.describe RedmineAutoDeputy::UserDeputyExtension do
 
       before do
         expect(user).to receive(:can_have_deputies_for_project?).with(1).and_return(true)
-        expect_any_instance_of(User).to receive(:can_be_deputy_for_project?).with(1).and_call_original
+        expect_any_instance_of(User).to receive(:can_be_deputy_for_project?).with(1).exactly(2).times.and_call_original
       end
 
       specify do

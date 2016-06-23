@@ -1,7 +1,7 @@
 require "spec_helper"
 RSpec.describe UserDeputy do
 
-  let(:user_deputy) { build(:user_deputy) }
+  let(:user_deputy) { create(:user_deputy, user_id: rand(10000), deputy_id: rand(10000)) }
 
   specify { expect(described_class.all.to_sql).to eq("SELECT `user_deputies`.* FROM `user_deputies`  ORDER BY `user_deputies`.`project_id` DESC, `user_deputies`.`prio` ASC")}
 
