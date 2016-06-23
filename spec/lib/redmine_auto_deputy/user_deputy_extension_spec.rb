@@ -54,10 +54,29 @@ RSpec.describe RedmineAutoDeputy::UserDeputyExtension do
       before do
         expect(user).to receive(:can_have_deputies_for_project?).with(1).and_return(true)
         expect_any_instance_of(User).to receive(:can_be_deputy_for_project?).with(1).exactly(2).times.and_call_original
+        expect_any_instance_of(UserDeputy).to receive(:disable!).and_call_original
       end
 
       specify do
         expect(user.find_deputy(project_id: 1)).to eq(nil)
+        expect(user_deputy_wo_project.reload.disabled).to be(true)
+      end
+    end
+
+    context 'reenable deputies if allowed but disables' do
+      let!(:user_deputy_wo_project) { create(:user_deputy, user: user, deputy: deputy, prio: 1) }
+      let!(:user_deputy_project_1) { create(:user_deputy, user: user, deputy: deputy, prio: 1, project_id: 1, disabled: true, disabled_at: Time.now) }
+      let!(:user_deputy_project_2) { create(:user_deputy, user: user, deputy: deputy, prio: 1, project_id: 2) }
+
+      before do
+        expect(user_deputy_project_1.disabled).to be(true)
+        allow_any_instance_of(User).to receive(:can_be_deputy_for_project?).with(1).and_return(true)
+        expect(user).to receive(:can_have_deputies_for_project?).with(1).and_return(true)
+      end
+
+      specify do
+        expect(user.find_deputy(project_id: 1)).to eq(user_deputy_project_1)
+        expect(user_deputy_project_1.reload.disabled).to be(false)
       end
     end
 
