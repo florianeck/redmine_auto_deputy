@@ -29,6 +29,7 @@ de:
     index:
       header: 'Verfügbarkeiten und Vertretung (%{user_name})'
       select_user: Benutzer wählen
+      disabled: deaktiviert
       sub_header:
         availabilities: Verfügbarkeiten
         deputies: Vertretungen
@@ -40,10 +41,11 @@ de:
         name: Name
         project: Projekt
       form:
-        all_projects: Gilt für alle Projekte
+        all_projects: Gilt für alle aktivierten Projekte
         submit_deputy: 'Vertretung anlegen'
         submit_availability: 'Abwesenheit speichern'
         submit_permissions: 'Rechte speichern'
+        select_deputy: "Bitte vertretenden Benutzer wählen"
         labels:
           unavailable_from: Abwesend von
           unavailable_to: Abwesend bis

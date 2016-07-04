@@ -34,12 +34,63 @@ RSpec.describe RedmineAutoDeputy::UserDeputyExtension do
     end
 
     context 'deputy found among multiple projects' do
-      let!(:user_deputy_wo_project) { create(:user_deputy, user: user, deputy: deputy, prio: 2) }
+      let!(:user_deputy_wo_project) { create(:user_deputy, user: user, deputy: deputy, prio: 1) }
       let!(:user_deputy_project_1) { create(:user_deputy, user: user, deputy: deputy, prio: 1, project_id: 1) }
       let!(:user_deputy_project_2) { create(:user_deputy, user: user, deputy: deputy, prio: 1, project_id: 2) }
 
+      before do
+        allow_any_instance_of(User).to receive(:can_be_deputy_for_project?).with(1).and_return(true)
+        expect(user).to receive(:can_have_deputies_for_project?).with(1).and_return(true)
+      end
+
       specify do
         expect(user.find_deputy(project_id: 1)).to eq(user_deputy_project_1)
+      end
+    end
+
+    context 'eliminate deputies that are not allowed for the project' do
+      let!(:user_deputy_wo_project) { create(:user_deputy, user: user, deputy: deputy, prio: 2) }
+
+      before do
+        expect(user).to receive(:can_have_deputies_for_project?).with(1).and_return(true)
+        expect_any_instance_of(User).to receive(:can_be_deputy_for_project?).with(1).exactly(2).times.and_call_original
+        expect_any_instance_of(UserDeputy).to receive(:disable!).and_call_original
+      end
+
+      specify do
+        expect(user.find_deputy(project_id: 1)).to eq(nil)
+        expect(user_deputy_wo_project.reload.disabled).to be(true)
+      end
+    end
+
+    context 'reenable deputies if allowed but disables' do
+      let!(:user_deputy_wo_project) { create(:user_deputy, user: user, deputy: deputy, prio: 1) }
+      let!(:user_deputy_project_1) { create(:user_deputy, user: user, deputy: deputy, prio: 1, project_id: 1, disabled: true, disabled_at: Time.now) }
+      let!(:user_deputy_project_2) { create(:user_deputy, user: user, deputy: deputy, prio: 1, project_id: 2) }
+
+      before do
+        expect(user_deputy_project_1.disabled).to be(true)
+        allow_any_instance_of(User).to receive(:can_be_deputy_for_project?).with(1).and_return(true)
+        expect(user).to receive(:can_have_deputies_for_project?).with(1).and_return(true)
+      end
+
+      specify do
+        expect(user.find_deputy(project_id: 1)).to eq(user_deputy_project_1)
+        expect(user_deputy_project_1.reload.disabled).to be(false)
+      end
+    end
+
+    context 'eliminate deputies that are not available at time' do
+      let!(:user_deputy_wo_project) { create(:user_deputy, user: user, deputy: deputy, prio: 2) }
+      let!(:date)   { Time.now.to_date }
+
+      before do
+        expect(user).to receive(:can_have_deputies_for_project?).with(1).and_return(true)
+        expect_any_instance_of(User).to receive(:available_at?).with(date).and_return(false)
+      end
+
+      specify do
+        expect(user.find_deputy(project_id: 1, date: date)).to eq(nil)
       end
     end
 
@@ -61,9 +112,38 @@ RSpec.describe RedmineAutoDeputy::UserDeputyExtension do
 
         specify { expect(user.find_deputy(date: Time.now+3.days)).to eq(nil) }
       end
+    end
+  end
 
+
+  context 'project permission finders' do
+    let(:user) { build(:user, id: 1) }
+
+    describe '#projects_with_have_deputies_permission' do
+      before do
+        expect(Project).to receive(:allowed_to_condition).with(user, :have_deputies).and_return('1 = 0')
+      end
+
+      specify { expect(user.projects_with_have_deputies_permission.to_sql).to eq("SELECT `projects`.* FROM `projects` WHERE (1 = 0)") }
     end
 
+    describe  '#can_have_deputies_for_project?' do
+      before { expect(user).to receive_message_chain(:projects_with_have_deputies_permission, :pluck).with(:id).and_return([1]) }
+      specify { expect(user.can_have_deputies_for_project?(1)).to be(true)}
+    end
+
+    describe '#projects_with_be_deputy_permission' do
+      before do
+        expect(Project).to receive(:allowed_to_condition).with(user, :be_deputy).and_return('1 = 0')
+      end
+
+      specify { expect(user.projects_with_be_deputy_permission.to_sql).to eq("SELECT `projects`.* FROM `projects` WHERE (1 = 0)") }
+    end
+
+    describe  '#can_be_deputy_for_project?' do
+      before { expect(user).to receive_message_chain(:projects_with_be_deputy_permission, :pluck).with(:id).and_return([1]) }
+      specify { expect(user.can_be_deputy_for_project?(1)).to be(true)}
+    end
   end
 
 end

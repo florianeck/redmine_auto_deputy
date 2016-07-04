@@ -26,6 +26,7 @@ en:
     index:
       header: 'Availability/Deputies (%{user_name})'
       select_user: Select user
+      disabled: disabled
       sub_header:
         availabilities: Availability
         deputies: Deputies
@@ -37,10 +38,11 @@ en:
         name: Name
         project: Project
       form:
-        all_projects: Valid for all projects
+        all_projects: Valid for all enabled projects
         submit_deputy: 'Create deputy'
         submit_availability: 'Save unvailabilities'
         submit_permissions: 'Save permissions'
+        select_deputy: "Please select Deputy"
         labels:
           unavailable_from: Unvailable from
           unavailable_to: Unvailable to

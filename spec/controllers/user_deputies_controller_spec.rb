@@ -10,25 +10,28 @@ RSpec.describe UserDeputiesController, type: :controller do
     let(:filter) { described_class._process_action_callbacks.select {|c| c.filter == :get_entry }.first }
     specify ':get_entry, except: [:index, :set_availabilities]' do
       expect(filter.kind).to eq(:before)
-      expect(filter.instance_variable_get('@unless')).to eq(["action_name == 'index' || action_name == 'set_availabilities'"])
+      expect(filter.instance_variable_get('@unless')).to eq(["action_name == 'index' || action_name == 'set_availabilities' || action_name == 'projects_for_user'"])
     end
   end
 
   describe '#index' do
 
     context 'user is allowed' do
+      let(:projects) { double }
+
       before do
         expect(current_user).to receive(:allowed_to_globally?).with(:have_deputies).and_return(true)
         expect(current_user).to receive(:allowed_to_globally?).with(:edit_deputies).and_return(false)
+        expect_any_instance_of(User).to receive(:projects_with_have_deputies_permission).and_return(projects)
         expect(RedmineAutoDeputy::UserDeputyExtension).to receive(:roles_for).with(:be_deputy).and_return([double(id: 1), double(id: 2)])
       end
 
       specify do
         get :index
 
-        expect(assigns[:users].to_sql).to eq("SELECT `users`.* FROM `users` INNER JOIN `members` ON `members`.`user_id` = `users`.`id` INNER JOIN `member_roles` ON `member_roles`.`member_id` = `members`.`id` INNER JOIN `roles` ON `roles`.`id` = `member_roles`.`role_id` WHERE `users`.`type` IN ('User', 'AnonymousUser') AND `member_roles`.`role_id` IN (1, 2) AND (`users`.`id` != #{current_user.id}) GROUP BY `users`.`id`")
+        expect(assigns[:users].to_sql).to eq("SELECT `users`.* FROM `users` INNER JOIN `members` ON `members`.`user_id` = `users`.`id` INNER JOIN `member_roles` ON `member_roles`.`member_id` = `members`.`id` INNER JOIN `roles` ON `roles`.`id` = `member_roles`.`role_id` WHERE `users`.`type` IN ('User', 'AnonymousUser') AND `member_roles`.`role_id` IN (1, 2) AND (`users`.`id` != #{current_user.id}) AND `users`.`status` = #{User::STATUS_ACTIVE} GROUP BY `users`.`id`")
         expect(assigns[:user]).to eq(current_user)
-        expect(assigns[:projects].to_sql).to eq("SELECT `projects`.* FROM `projects` WHERE (((projects.status <> 9) AND ((projects.is_public = 1 AND projects.id NOT IN (SELECT project_id FROM members WHERE user_id = #{current_user.id})))))")
+        expect(assigns[:projects]).to eq(projects)
         expect(assigns[:user_deputies_with_projects].to_sql).to eq("SELECT `user_deputies`.* FROM `user_deputies` INNER JOIN `projects` ON `projects`.`id` = `user_deputies`.`project_id` WHERE (`user_deputies`.`project_id` IS NOT NULL) AND `user_deputies`.`user_id` = #{current_user.id}  ORDER BY projects.name ASC, `user_deputies`.`prio` ASC")
         expect(assigns[:user_deputies_without_projects].to_sql).to eq("SELECT `user_deputies`.* FROM `user_deputies` WHERE `user_deputies`.`project_id` IS NULL AND `user_deputies`.`user_id` = #{current_user.id}  ORDER BY `user_deputies`.`prio` ASC")
       end
@@ -189,6 +192,18 @@ RSpec.describe UserDeputiesController, type: :controller do
         expect(flash[:error]).to eq(I18n.t('user_deputies.set_availabilities.error.not_saved', errors: assigns[:user].errors.full_messages.to_sentence))
         expect(response).to redirect_to(user_deputies_path)
       end
+    end
+  end
+
+  describe '#projects_for_user' do
+    let(:projects) { [double(:project, id: 1, name: 'Project')] }
+    before { expect_any_instance_of(User).to receive(:projects_with_be_deputy_permission).and_return(projects) }
+
+    specify do
+      get :projects_for_user, user_id: current_user.id
+      expect(assigns[:user]).to eq(current_user)
+      expect(assigns[:projects]).to eq(projects)
+      expect(response).to render_template(partial: 'user_deputies/project_selector')
     end
   end
 
