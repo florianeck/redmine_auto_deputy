@@ -13,9 +13,6 @@ Redmine::Plugin.register :redmine_auto_deputy do
       pmap.permission :be_deputy,     { user_deputies: [] }
     end
   end
-
-
-
 end
 
 require "redmine_auto_deputy"

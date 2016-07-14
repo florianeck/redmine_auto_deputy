@@ -3,8 +3,8 @@ module RedmineAutoDeputy::UserDeputyExtension
 
   included do
     has_many :user_deputies, class_name: 'UserDeputy', foreign_key: :user_id
-    has_many :memberships, class_name: 'Member', foreign_key: :user_id
-    has_many :roles, through: :memberships
+    has_many :akq_memberships, class_name: 'Member', foreign_key: :user_id
+    has_many :roles, through: :akq_memberships
 
     scope :with_deputy_permission, -> (permission_name) {
       joins(:roles)
