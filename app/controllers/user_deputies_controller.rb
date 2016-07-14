@@ -55,7 +55,8 @@ class UserDeputiesController < ApplicationController
   def projects_for_user
     @user = User.find(params[:user_id])
     @projects = @user.projects_with_be_deputy_permission
-    render partial: "/user_deputies/project_selector"
+    binding.pry
+    render "/user_deputies/project_selector", layout: nil
   end
 
   private
