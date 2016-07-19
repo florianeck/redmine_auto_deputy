@@ -76,7 +76,7 @@
 
     <hr></hr>
 
-    <%= form_for UserDeputy.new do |f| %>
+    <%= form_for UserDeputy.new, url: user_deputies_path(user_id: @user.id) do |f| %>
       <h4><%= t('.sub_header.new_deputy') %></h4>
       <%= f.label :deputy_id, UserDeputy.human_attribute_name(:deputy) %><br />
       <%= f.select :deputy_id, @users.order(:lastname).map {|u| [u.name(:lastname_firstname), u.id]}, include_blank: true %><br />

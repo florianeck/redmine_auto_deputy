@@ -17,17 +17,17 @@ class UserDeputiesController < ApplicationController
     else
       flash[:error] = t('.error.not_saved', errors: @deputy.errors.full_messages.to_sentence)
     end
-    redirect_to action: :index
+    redirect_to action: :index, user_id: @user.id
   end
 
   def move_up
     @user_deputy.move_higher
-    redirect_to action: :index
+    redirect_to action: :index, user_id: @user.id
   end
 
   def move_down
     @user_deputy.move_lower
-    redirect_to action: :index
+    redirect_to action: :index, user_id: @user.id
   end
 
   def delete
@@ -36,7 +36,7 @@ class UserDeputiesController < ApplicationController
     else
       flash[:error] = t('.error.not_deleted', errors: @user_deputy.errors.full_messages.to_sentence )
     end
-    redirect_to action: :index
+    redirect_to action: :index, user_id: @user.id
   end
 
   def set_availabilities
@@ -49,7 +49,7 @@ class UserDeputiesController < ApplicationController
       flash[:error] = t('.error.not_saved', errors: @user.errors.full_messages.to_sentence )
     end
 
-    redirect_to action: :index
+    redirect_to action: :index, user_id: @user.id
   end
 
   def projects_for_user
@@ -61,11 +61,11 @@ class UserDeputiesController < ApplicationController
   private
 
   def get_entry
-    @user_deputy = UserDeputy.where(id: params[:id], user_id: User.current.id).first
+    @user_deputy = UserDeputy.where(id: params[:id]).first
   end
 
   def deputy_attributes
-    params.require(:user_deputy).permit(:deputy_id, :project_id).merge(user_id: User.current.id)
+    params.require(:user_deputy).permit(:deputy_id, :project_id).merge(user_id: @user.id)
   end
 
   def availability_attributes
