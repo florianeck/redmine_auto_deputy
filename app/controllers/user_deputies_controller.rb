@@ -17,17 +17,17 @@ class UserDeputiesController < ApplicationController
     else
       flash[:error] = t('.error.not_saved', errors: @deputy.errors.full_messages.to_sentence)
     end
-    redirect_to action: :index, user_id: @user.id
+    redirect_to action: :index, user_id: @deputy.user_id
   end
 
   def move_up
     @user_deputy.move_higher
-    redirect_to action: :index, user_id: @user.id
+    redirect_to action: :index, user_id: @user_deputy.user_id
   end
 
   def move_down
     @user_deputy.move_lower
-    redirect_to action: :index, user_id: @user.id
+    redirect_to action: :index, user_id: @user_deputy.user_id
   end
 
   def delete
@@ -36,7 +36,7 @@ class UserDeputiesController < ApplicationController
     else
       flash[:error] = t('.error.not_deleted', errors: @user_deputy.errors.full_messages.to_sentence )
     end
-    redirect_to action: :index, user_id: @user.id
+    redirect_to action: :index, user_id: @user_deputy.user_id
   end
 
   def set_availabilities
