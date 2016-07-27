@@ -29,7 +29,6 @@ RSpec.describe RedmineAutoDeputy::IssueExtension do
 
       specify do
         expect(issue.send(:check_assigned_user_availability)).to be(nil)
-        expect(issue.assigned_to).to eq(user)
       end
     end
 
