@@ -21,6 +21,18 @@ RSpec.describe RedmineAutoDeputy::IssueExtension do
       end
     end
 
+    context 'assigned_to User.current' do
+      let(:issue) { build_stubbed(:issue, assigned_to: user) }
+      let(:user)  { build_stubbed(:user)}
+
+      before { expect(User).to receive(:current).and_return(user) }
+
+      specify do
+        expect(issue.send(:check_assigned_user_availability)).to be(nil)
+        expect(issue.assigned_to).to eq(user)
+      end
+    end
+
     context 'uses current date if no due_to date is assigned' do
       let(:issue) { build_stubbed(:issue, assigned_to: user) }
       let(:user)  { build_stubbed(:user)}

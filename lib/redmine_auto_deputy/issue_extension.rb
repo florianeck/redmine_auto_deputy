@@ -7,7 +7,7 @@ module RedmineAutoDeputy::IssueExtension
 
   private
   def check_assigned_user_availability
-    return if self.assigned_to.nil?
+    return if self.assigned_to.nil? || self.assigned_to == User.current
 
     check_date = self.due_date || Time.now.to_date
     original_assigned = self.assigned_to
