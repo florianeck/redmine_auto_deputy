@@ -42,6 +42,7 @@ RSpec.describe RedmineAutoDeputy::IssueExtension do
         expect(issue).to receive(:project_id).and_return(1)
         expect(user).to receive(:available_at?).with(date).and_return false
         expect(user).to receive(:find_deputy).with(project_id: 1, date: date).and_return(user_deputy)
+        expect(issue).to receive(:init_journal).with(deputy).and_call_original
         expect(issue).to receive_message_chain(:current_journal, 'notes=').with(I18n.t('issue_assigned_to_changed', new_name: deputy.name, original_name: user.name) )
       end
 

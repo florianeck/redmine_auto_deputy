@@ -18,6 +18,8 @@ module RedmineAutoDeputy::IssueExtension
       user_deputy = self.assigned_to.find_deputy(project_id: self.project_id, date: check_date)
       if user_deputy
         self.assigned_to = user_deputy.deputy
+
+        self.init_journal(user_deputy.deputy)
         self.current_journal.notes = I18n.t('issue_assigned_to_changed', new_name: self.assigned_to.name, original_name: original_assigned.name)
         return true
       else
