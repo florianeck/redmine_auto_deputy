@@ -32,8 +32,16 @@ RSpec.describe RedmineAutoDeputy::IssueExtension do
       end
     end
 
-    context 'uses current date if no due_to date is assigned' do
+    context 'uses current date if no due_date date is assigned' do
       let(:issue) { build_stubbed(:issue, assigned_to: user) }
+      let(:user)  { build_stubbed(:user)}
+
+      before { expect(user).to receive(:available_at?).with(Time.now.to_date).and_return true }
+      specify { expect(issue.send(:check_assigned_user_availability)).to be(true) }
+    end
+
+    context 'uses current date if due_date is in the past' do
+      let(:issue) { build_stubbed(:issue, assigned_to: user, due_date: Time.now - 3.days) }
       let(:user)  { build_stubbed(:user)}
 
       before { expect(user).to receive(:available_at?).with(Time.now.to_date).and_return true }
