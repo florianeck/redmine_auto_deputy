@@ -9,7 +9,7 @@ module RedmineAutoDeputy::IssueExtension
   def check_assigned_user_availability
     return if self.assigned_to.nil? || self.assigned_to == User.current
 
-    check_date = [self.due_date, Time.now.to_date].compact.max
+    check_date = [self.start_date, Time.now.to_date].compact.max
 
     original_assigned = self.assigned_to
 

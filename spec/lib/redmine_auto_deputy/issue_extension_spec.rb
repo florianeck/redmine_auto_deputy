@@ -50,7 +50,7 @@ RSpec.describe RedmineAutoDeputy::IssueExtension do
 
     context 'uses due_to date to find deputy' do
       let(:date)    { Time.now.to_date+1.week }
-      let(:issue)   { build(:issue, assigned_to: user, due_date: date, project_id: 1) }
+      let(:issue)   { build(:issue, assigned_to: user, start_date: date, project_id: 1) }
       let(:user)    { build_stubbed(:user)}
       let(:deputy)  { build_stubbed(:user, firstname: 'Deputy')}
 
@@ -73,7 +73,7 @@ RSpec.describe RedmineAutoDeputy::IssueExtension do
 
     context 'fails to find deputy' do
       let(:date)    { Time.now.to_date+1.week }
-      let(:issue) { build_stubbed(:issue, assigned_to: user, project_id: 1, due_date: date) }
+      let(:issue) { build_stubbed(:issue, assigned_to: user, project_id: 1, start_date: date) }
       let(:user)  { build_stubbed(:user, firstname: 'Max', lastname: 'Muster')}
 
       before do
