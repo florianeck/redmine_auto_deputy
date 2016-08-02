@@ -2,7 +2,7 @@ module RedmineAutoDeputy::IssueExtension
   extend ActiveSupport::Concern
 
   included do
-    before_save :check_assigned_user_availability,  if: :assigned_to_id_changed?
+    before_save :check_assigned_user_availability,  if: :recheck_availability_required?
   end
 
   private
@@ -28,6 +28,12 @@ module RedmineAutoDeputy::IssueExtension
         return false
       end
     end
+  end
+
+  private
+
+  def recheck_availability_required?
+    assigned_to_id_changed? || start_date_changed?
   end
 
 end

@@ -7,7 +7,7 @@ RSpec.describe RedmineAutoDeputy::IssueExtension do
   describe 'check_assigned_user_availability on before_save if assigned_to_id_changed?' do
     let(:filter) { Issue._save_callbacks.select {|c| c.kind ==  :before && c.filter == :check_assigned_user_availability }.first }
     specify do
-      expect(filter.instance_variable_get('@if')).to match_array([:assigned_to_id_changed?])
+      expect(filter.instance_variable_get('@if')).to match_array([:recheck_availability_required?])
     end
   end
 
@@ -87,6 +87,40 @@ RSpec.describe RedmineAutoDeputy::IssueExtension do
         expect(issue.send(:check_assigned_user_availability)).to eq(false)
         expect(issue.errors[:assigned_to]).to include(I18n.t('activerecord.errors.issue.cant_be_assigned_due_to_unavailability', user_name: user.name, date: date.to_s))
       end
+
+    end
+
+    context 'change start_date' do
+
+      Issue.skip_callback(:create, :after, :send_notification)
+
+      let(:user)    { create(:user)}
+      let!(:project) { create(:project, identifier: "mytest#{rand(50)}") }
+      let(:issue)   { create(:issue, :with_issue_data, subject: 'somethings wrong', assigned_to: user, start_date: Date.new(2016,1,1), project: project) }
+
+      before do
+        allow(issue).to receive(:assigned_to).and_return(user)
+        expect(user).to receive(:available_at?).with(Date.tomorrow)
+      end
+
+      specify { issue.update_attributes(start_date: Date.tomorrow) }
+
+    end
+
+    context 'change assigned to' do
+
+      Issue.skip_callback(:create, :after, :send_notification)
+
+      let(:user)    { create(:user)}
+      let(:user_new)    { create(:user)}
+      let!(:project) { create(:project, identifier: "mytest#{rand(50)}") }
+      let(:issue)   { create(:issue, :with_issue_data, subject: 'somethings wrong', assigned_to: user, start_date: Date.tomorrow, project: project) }
+
+      before do
+        expect(user_new).to receive(:available_at?).with(Date.tomorrow)
+      end
+
+      specify { issue.update_attributes(assigned_to: user_new) }
 
     end
 
