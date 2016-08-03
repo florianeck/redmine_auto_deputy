@@ -56,36 +56,45 @@ RSpec.describe RedmineAutoDeputy::IssueExtension do
 
       let(:user_deputy) { build_stubbed(:user_deputy, deputy: deputy)}
 
-      before do
-        # need to mock 'project_id' getter, as redmine does not allow to set the id directly
-        expect(issue).to receive(:project_id).and_return(1)
-        expect(user).to receive(:available_at?).with(date).and_return false
-        expect(user).to receive(:find_deputy).with(project_id: 1, date: date).and_return(user_deputy)
-        expect(issue).to receive(:init_journal).with(deputy).and_call_original
-        expect(issue).to receive_message_chain(:current_journal, 'notes=').with(I18n.t('issue_assigned_to_changed', new_name: deputy.name, original_name: user.name) )
-      end
+      let(:journal) { Journal.new(:journalized => issue, :user => user, :notes => nil) }
 
-      specify do
-        expect(issue.send(:check_assigned_user_availability)).to eq(true)
-        expect(issue.assigned_to).to eq(deputy)
+      context 'journal is present' do
+        before do
+          # need to mock 'project_id' getter, as redmine does not allow to set the id directly
+          expect(issue).to receive(:project_id).and_return(1)
+          expect(user).to receive(:available_at?).with(date).and_return false
+          expect(user).to receive(:find_deputy).with(project_id: 1, date: date).and_return(user_deputy)
+
+          expect(issue).to receive(:current_journal).and_return(journal).exactly(2).times
+          expect(journal).to receive('notes=').with(I18n.t('issue_assigned_to_changed', new_name: deputy.name, original_name: user.name) )
+        end
+
+        specify do
+          expect(issue.send(:check_assigned_user_availability)).to eq(true)
+          expect(issue.assigned_to).to eq(deputy)
+        end
       end
     end
 
     context 'fails to find deputy' do
       let(:date)    { Time.now.to_date+1.week }
       let(:issue) { build_stubbed(:issue, assigned_to: user, project_id: 1, start_date: date) }
-      let(:user)  { build_stubbed(:user, firstname: 'Max', lastname: 'Muster')}
+      let(:user)  { build_stubbed(:user, firstname: 'Max', lastname: 'Muster', unavailable_from: date-1.days, unavailable_to: date+1.days)}
+
+      # Mocking I18n, for some reasons, locales from plugin are not loaded
+      let(:i18n_error_string) { 'Error Happend' }
 
       before do
         # need to mock 'project_id' getter, as redmine does not allow to set the id directly
         expect(issue).to receive(:project_id).and_return(1)
         expect(user).to receive(:available_at?).with(date).and_return false
         expect(user).to receive(:find_deputy).with(project_id: 1, date: date).and_return(nil)
+        expect(I18n).to receive(:t).with('activerecord.errors.issue.cant_be_assigned_due_to_unavailability', user_name: user.name, date: date.to_s, from: user.unavailable_from.to_s, to: user.unavailable_to.to_s).and_return(i18n_error_string)
       end
 
       specify do
         expect(issue.send(:check_assigned_user_availability)).to eq(false)
-        expect(issue.errors[:assigned_to]).to include(I18n.t('activerecord.errors.issue.cant_be_assigned_due_to_unavailability', user_name: user.name, date: date.to_s))
+        expect(issue.errors[:assigned_to]).to include(i18n_error_string)
       end
 
     end

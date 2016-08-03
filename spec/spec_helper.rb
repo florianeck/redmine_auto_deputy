@@ -22,7 +22,10 @@ require "pry"
 require "factory_girl"
 require 'rspec/rails'
 
+
 Rails.application.config.after_initialize do
+  Rails.application.config.i18n.load_path += Dir[File.expand_path("../config/locales/*.yml", __FILE__)]
+
   User.send(:include, RedmineAutoDeputy::UserAvailabilityExtension) unless User.included_modules.include?(RedmineAutoDeputy::UserAvailabilityExtension)
   User.send(:include, RedmineAutoDeputy::UserDeputyExtension) unless User.included_modules.include?(RedmineAutoDeputy::UserDeputyExtension)
   Issue.send(:include, RedmineAutoDeputy::IssueExtension) unless Issue.included_modules.include?(RedmineAutoDeputy::IssueExtension)

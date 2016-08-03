@@ -20,7 +20,7 @@ de:
         unavailable_to_before_from: '"Abwesend bis" darf nicht vor "Abwesend von" liegen'
 
       issue:
-        cant_be_assigned_due_to_unavailability: 'Zuweisung an %{user_name} nicht möglich. Nicht verfügbar am %{date}'
+        cant_be_assigned_due_to_unavailability: 'Zuweisung an %{user_name} nicht möglich. Nicht verfügbar am %{date} (Abwesend von %{from} - %{to})'
   # Views
   deputies: Verfügbarkeit/Vertretung
   issue_assigned_to_changed: "Aufgabe wurde automatisch an '%{new_name}' zugewiesen. Ursprünglich zugewiesen an '%{original_name}'"

@@ -20,11 +20,15 @@ module RedmineAutoDeputy::IssueExtension
       if user_deputy
         self.assigned_to = user_deputy.deputy
 
-        self.init_journal(user_deputy.deputy)
+        if self.current_journal.nil?
+          self.init_journal(user_deputy.deputy)
+        end
+
         self.current_journal.notes = I18n.t('issue_assigned_to_changed', new_name: self.assigned_to.name, original_name: original_assigned.name)
         return true
       else
-        self.errors.add(:assigned_to, I18n.t('activerecord.errors.issue.cant_be_assigned_due_to_unavailability', user_name: self.assigned_to.name, date: check_date.to_s))
+        self.errors.add(:assigned_to, I18n.t('activerecord.errors.issue.cant_be_assigned_due_to_unavailability',
+          user_name: self.assigned_to.name, date: check_date.to_s, from: self.assigned_to.unavailable_from.to_s, to: self.assigned_to.unavailable_to.to_s))
         return false
       end
     end
