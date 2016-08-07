@@ -2,6 +2,12 @@ require 'spec_helper'
 
 RSpec.describe RedmineAutoDeputy::IssueExtension do
 
+  before(:each) do
+    Tracker.delete_all
+    IssueStatus.delete_all
+    IssuePriority.delete_all
+  end
+
   specify { expect(Issue.included_modules).to include(described_class)}
 
   describe 'check_assigned_user_availability on before_save if assigned_to_id_changed?' do

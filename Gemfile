@@ -22,6 +22,8 @@ group :test do
   gem "simplecov", "~> 0.9.1", require: true
   gem 'factory_girl_rails'
   gem 'rspec-rails'
+  gem 'capybara'
+  gem 'database_cleaner'
 end
 
 

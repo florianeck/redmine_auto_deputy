@@ -35,3 +35,12 @@ end
 # include and load factories
 RSpec.configure { |config| config.include FactoryGirl::Syntax::Methods }
 Dir.glob(File.expand_path("../factories/*.rb", __FILE__)).each {|factory_rb| require factory_rb }
+
+require 'capybara/rails'
+
+RSpec.configure do |config|
+  config.before(:suite) do
+    DatabaseCleaner.clean_with :truncation
+    DatabaseCleaner.strategy = :transaction
+  end
+end

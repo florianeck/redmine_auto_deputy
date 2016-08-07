@@ -25,7 +25,7 @@ FactoryGirl.define do
    end
 
    factory :issue_status do
-     name "some status #{Time.now.to_i}"
+     name "some status #{[0..10000].to_a.sample}"
    end
 
    factory :issue_priority do
