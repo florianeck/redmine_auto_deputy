@@ -21,4 +21,5 @@ Rails.application.config.after_initialize do
   User.send(:include, RedmineAutoDeputy::UserAvailabilityExtension)
   User.send(:include, RedmineAutoDeputy::UserDeputyExtension)
   Issue.send(:include, RedmineAutoDeputy::IssueExtension)
+  Project.send(:include, RedmineAutoDeputy::ProjectExtension)
 end

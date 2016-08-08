@@ -31,12 +31,13 @@
         <th><%= t('.table_header.prio') %></th>
         <th><%= t('.table_header.name') %></th>
         <th><%= t('.table_header.watch_issues') %></th>
+        <th><%= t('.table_header.projects_inherit') %></th>
       </thead>
 
       <% [@user_deputies_with_projects, @user_deputies_without_projects].flatten.each do |user_deputy| %>
         <% if user_deputy.prio == 1 %>
           <tr>
-            <td colspan="4"><%= user_deputy.project.try(:name) || t('.form.all_projects') %></td>
+            <td colspan="5"><%= user_deputy.project.try(:name) || t('.form.all_projects') %></td>
           </tr>
         <% end %>
         <tr>
@@ -55,7 +56,14 @@
             <% end %>
           </td>
           <td><%= user_deputy.deputy.name %></td>
-          <td><%= check_box_tag "auto_watch_project_issues_#{user_deputy.id}", 1, user_deputy.auto_watch_project_issues, onclick: "toggleWatchProjectFlag(#{user_deputy.id})" %></td>
+          <td><%= check_box_tag "auto_watch_project_issues_#{user_deputy.id}", 1, user_deputy.auto_watch_project_issues?, onclick: "toggleWatchProjectFlag(#{user_deputy.id})" %></td>
+          <td>
+            <% if user_deputy.project %>
+              <%= check_box_tag "projects_inherit_issues_#{user_deputy.id}", 1, user_deputy.projects_inherit?, onclick: "toggleInheritProjectFlag(#{user_deputy.id})" %>
+            <% else %>
+              <%= t(".not_available") %>
+            <% end %>
+          </td>
         </tr>
       <% end %>
     </table>
@@ -116,9 +124,13 @@
 
       toggleWatchProjectFlag = function(deputy_id){
         $.ajax({
-          url: "<%= toggle_watch_issues_user_deputies_path %>",
-          type: "POST",
-          data: {id: deputy_id }
+          url: "<%= toggle_watch_issues_user_deputies_path %>", type: "POST", data: {id: deputy_id }
+        })
+      }
+
+      toggleInheritProjectFlag = function(deputy_id){
+        $.ajax({
+          url: "<%= toggle_inheritance_user_deputies_path %>", type: "POST", data: {id: deputy_id }
         })
       }
     });

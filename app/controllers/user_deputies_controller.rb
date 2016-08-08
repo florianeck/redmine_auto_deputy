@@ -63,6 +63,11 @@ class UserDeputiesController < ApplicationController
     render status: 200, text: 'OK'
   end
 
+  def toggle_inheritance
+    @user_deputy.toggle! :projects_inherit
+    render status: 200, text: 'OK'
+  end
+
   private
 
   def get_entry
