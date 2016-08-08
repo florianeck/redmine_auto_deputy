@@ -58,6 +58,11 @@ class UserDeputiesController < ApplicationController
     render "/user_deputies/project_selector", layout: nil
   end
 
+  def toggle_watch_issues
+    @user_deputy.toggle! :auto_watch_project_issues
+    render status: 200, text: 'OK'
+  end
+
   private
 
   def get_entry

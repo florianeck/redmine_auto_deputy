@@ -24,6 +24,10 @@ module RedmineAutoDeputy::IssueExtension
           self.init_journal(user_deputy.deputy)
         end
 
+        if user_deputy.auto_watch_project_issues?
+          self.add_watcher(original_assigned)
+        end
+
         self.current_journal.notes = I18n.t('issue_assigned_to_changed', new_name: self.assigned_to.name, original_name: original_assigned.name)
         return true
       else

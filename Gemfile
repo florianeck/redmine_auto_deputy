@@ -7,6 +7,7 @@ gem 'acts_as_list'
 # please note: the gems need to be exactly the same versions as given in your host redmine application Gemfile
 if ENV['RAILS_ENV'] == 'test'
   gem 'rails', '4.2.5'
+  gem 'activesupport'
   gem 'actionpack-xml_parser'
   gem 'mysql2', '~> 0.3.11'
   gem 'rack-openid'

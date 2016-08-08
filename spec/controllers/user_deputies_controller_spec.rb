@@ -210,6 +210,18 @@ RSpec.describe UserDeputiesController, type: :controller do
     end
   end
 
+  describe '#toggle_watch_issues' do
+    before do
+      expect(current_user).to receive(:allowed_to_globally?).with(:edit_deputies).and_return(true)
+      expect(current_user).to receive(:allowed_to_globally?).with(:have_deputies).and_return(true)
+      expect_any_instance_of(UserDeputy).to receive(:toggle!).with(:auto_watch_project_issues)
+    end
+    specify do
+      post :toggle_watch_issues, id: user_deputy.id
+      expect(response).to be_success
+    end
+  end
+
   after do
     UserDeputy.delete_all
   end

@@ -40,6 +40,7 @@ de:
         prio: Prio
         name: Name
         project: Projekt
+        watch_issues: Neu zugewiesene Tickets beobachten
       form:
         all_projects: Gilt für alle aktivierten Projekte
         submit_deputy: 'Vertretung anlegen'

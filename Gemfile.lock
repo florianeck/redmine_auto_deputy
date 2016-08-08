@@ -160,6 +160,7 @@ PLATFORMS
 
 DEPENDENCIES
   actionpack-xml_parser
+  activesupport
   acts_as_list
   capybara
   database_cleaner
