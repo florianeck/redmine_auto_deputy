@@ -3,6 +3,8 @@ class UserDeputiesController < ApplicationController
   before_filter :check_permission, :get_user, except: [:projects_for_user]
   before_filter :get_entry, except: [:index, :set_availabilities, :projects_for_user]
 
+  before_filter { prepend_view_path("#{Rails.root}/plugins/redmine_auto_deputy/app/views") }
+
   def index
     @users = User.with_deputy_permission(:be_deputy).where.not(id: @user.id).status(User::STATUS_ACTIVE)
     @projects = @user.projects_with_have_deputies_permission

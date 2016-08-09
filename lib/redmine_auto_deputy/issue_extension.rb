@@ -16,7 +16,7 @@ module RedmineAutoDeputy::IssueExtension
     if self.assigned_to.available_at?(check_date)
       return true
     else # => need to assign someone else
-      user_deputy = self.assigned_to.find_deputy(project_id: self.project_id, date: check_date)
+      user_deputy = self.assigned_to.find_deputy(project_id: self.project.possible_project_id_for_deputies(original_assigned), date: check_date)
       if user_deputy
         self.assigned_to = user_deputy.deputy
 
