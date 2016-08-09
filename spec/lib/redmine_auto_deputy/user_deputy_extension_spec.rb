@@ -124,7 +124,7 @@ RSpec.describe RedmineAutoDeputy::UserDeputyExtension do
         expect(Project).to receive(:allowed_to_condition).with(user, :have_deputies).and_return('1 = 0')
       end
 
-      specify { expect(user.projects_with_have_deputies_permission.to_sql).to eq("SELECT `projects`.* FROM `projects` WHERE (1 = 0)") }
+      specify { expect(user.projects_with_have_deputies_permission.to_sql).to eq("SELECT `projects`.* FROM `projects` WHERE (1 = 0)  ORDER BY `projects`.`name` ASC") }
     end
 
     describe  '#can_have_deputies_for_project?' do
@@ -137,7 +137,7 @@ RSpec.describe RedmineAutoDeputy::UserDeputyExtension do
         expect(Project).to receive(:allowed_to_condition).with(user, :be_deputy).and_return('1 = 0')
       end
 
-      specify { expect(user.projects_with_be_deputy_permission.to_sql).to eq("SELECT `projects`.* FROM `projects` WHERE (1 = 0)") }
+      specify { expect(user.projects_with_be_deputy_permission.to_sql).to eq("SELECT `projects`.* FROM `projects` WHERE (1 = 0)  ORDER BY `projects`.`name` ASC") }
     end
 
     describe  '#can_be_deputy_for_project?' do

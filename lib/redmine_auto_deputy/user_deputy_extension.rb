@@ -46,7 +46,7 @@ module RedmineAutoDeputy::UserDeputyExtension
   end
 
   def projects_with_have_deputies_permission
-    Project.where(Project.allowed_to_condition(self, :have_deputies))
+    Project.where(Project.allowed_to_condition(self, :have_deputies)).order(:name)
   end
 
   def can_have_deputies_for_project?(project_id)
@@ -54,7 +54,7 @@ module RedmineAutoDeputy::UserDeputyExtension
   end
 
   def projects_with_be_deputy_permission
-    Project.where(Project.allowed_to_condition(self, :be_deputy))
+    Project.where(Project.allowed_to_condition(self, :be_deputy)).order(:name)
   end
 
   def can_be_deputy_for_project?(project_id)
