@@ -65,16 +65,29 @@ RSpec.describe RedmineAutoDeputy::IssueExtension do
 
       let(:journal) { Journal.new(:journalized => issue, :user => user, :notes => nil) }
 
+      before do
+        expect(user).to receive(:available_at?).with(date).and_return false
+        expect(project).to receive(:possible_project_id_for_deputies).with(user).and_return(1)
+        expect(user).to receive(:find_deputy).with(project_id: 1, date: date).and_return(user_deputy)
+
+        expect(issue).to receive(:add_watcher).with(user)
+      end
+
       context 'journal is present' do
         before do
-          expect(user).to receive(:available_at?).with(date).and_return false
-          expect(project).to receive(:possible_project_id_for_deputies).with(user).and_return(1)
-          expect(user).to receive(:find_deputy).with(project_id: 1, date: date).and_return(user_deputy)
-
-          expect(issue).to receive(:add_watcher).with(user)
-
           expect(issue).to receive(:current_journal).and_return(journal).exactly(2).times
           expect(journal).to receive('notes=').with(I18n.t('issue_assigned_to_changed', new_name: deputy.name, original_name: user.name) )
+        end
+
+        specify do
+          expect(issue.send(:check_assigned_user_availability)).to eq(true)
+          expect(issue.assigned_to).to eq(deputy)
+        end
+      end
+
+      context 'journal is not present' do
+        before do
+          expect(issue).to receive(:init_journal).and_call_original
         end
 
         specify do

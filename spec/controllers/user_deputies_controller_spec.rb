@@ -222,6 +222,18 @@ RSpec.describe UserDeputiesController, type: :controller do
     end
   end
 
+  describe '#toggle_inheritance' do
+    before do
+      expect(current_user).to receive(:allowed_to_globally?).with(:edit_deputies).and_return(true)
+      expect(current_user).to receive(:allowed_to_globally?).with(:have_deputies).and_return(true)
+      expect_any_instance_of(UserDeputy).to receive(:toggle!).with(:projects_inherit)
+    end
+    specify do
+      post :toggle_inheritance, id: user_deputy.id
+      expect(response).to be_success
+    end
+  end
+
   after do
     UserDeputy.delete_all
   end

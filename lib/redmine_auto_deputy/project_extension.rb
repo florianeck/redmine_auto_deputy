@@ -2,7 +2,7 @@ module RedmineAutoDeputy::ProjectExtension
   extend ActiveSupport::Concern
 
   def possible_project_id_for_deputies(user, current_project_id = nil)
-    if current_project_id && current_project_id
+    if current_project_id && current_project_id != self.id
       deputy_entry = UserDeputy.where(user_id: user.id, disabled: false, project_id: self.id, projects_inherit: true).first
     else
       deputy_entry = UserDeputy.where(user_id: user.id, disabled: false, project_id: self.id).first
