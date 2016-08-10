@@ -56,25 +56,38 @@ RSpec.describe RedmineAutoDeputy::IssueExtension do
 
     context 'uses due_to date to find deputy' do
       let(:date)    { Time.now.to_date+1.week }
-      let(:issue)   { build(:issue, assigned_to: user, start_date: date, project_id: 1) }
+      let(:issue)   { build(:issue, assigned_to: user, start_date: date, project: project) }
       let(:user)    { build_stubbed(:user)}
       let(:deputy)  { build_stubbed(:user, firstname: 'Deputy')}
 
       let(:user_deputy) { build_stubbed(:user_deputy, deputy: deputy)}
+      let(:project)     { build_stubbed(:project) }
 
       let(:journal) { Journal.new(:journalized => issue, :user => user, :notes => nil) }
 
+      before do
+        expect(user).to receive(:available_at?).with(date).and_return false
+        expect(project).to receive(:possible_project_id_for_deputies).with(user).and_return(1)
+        expect(user).to receive(:find_deputy).with(project_id: 1, date: date).and_return(user_deputy)
+
+        expect(issue).to receive(:add_watcher).with(user)
+      end
+
       context 'journal is present' do
         before do
-          # need to mock 'project_id' getter, as redmine does not allow to set the id directly
-          expect(issue).to receive(:project_id).and_return(1)
-          expect(user).to receive(:available_at?).with(date).and_return false
-          expect(user).to receive(:find_deputy).with(project_id: 1, date: date).and_return(user_deputy)
-
-          expect(issue).to receive(:add_watcher).with(user)
-
           expect(issue).to receive(:current_journal).and_return(journal).exactly(2).times
           expect(journal).to receive('notes=').with(I18n.t('issue_assigned_to_changed', new_name: deputy.name, original_name: user.name) )
+        end
+
+        specify do
+          expect(issue.send(:check_assigned_user_availability)).to eq(true)
+          expect(issue.assigned_to).to eq(deputy)
+        end
+      end
+
+      context 'journal is not present' do
+        before do
+          expect(issue).to receive(:init_journal).and_call_original
         end
 
         specify do
@@ -86,16 +99,16 @@ RSpec.describe RedmineAutoDeputy::IssueExtension do
 
     context 'fails to find deputy' do
       let(:date)    { Time.now.to_date+1.week }
-      let(:issue) { build_stubbed(:issue, assigned_to: user, project_id: 1, start_date: date) }
+      let(:project)     { build_stubbed(:project) }
+      let(:issue) { build_stubbed(:issue, assigned_to: user, project_id: 1, start_date: date, project: project) }
       let(:user)  { build_stubbed(:user, firstname: 'Max', lastname: 'Muster', unavailable_from: date-1.days, unavailable_to: date+1.days)}
 
       # Mocking I18n, for some reasons, locales from plugin are not loaded
       let(:i18n_error_string) { 'Error Happend' }
 
       before do
-        # need to mock 'project_id' getter, as redmine does not allow to set the id directly
-        expect(issue).to receive(:project_id).and_return(1)
         expect(user).to receive(:available_at?).with(date).and_return false
+        expect(project).to receive(:possible_project_id_for_deputies).with(user).and_return(1)
         expect(user).to receive(:find_deputy).with(project_id: 1, date: date).and_return(nil)
         expect(I18n).to receive(:t).with('activerecord.errors.issue.cant_be_assigned_due_to_unavailability', user_name: user.name, date: date.to_s, from: user.unavailable_from.to_s, to: user.unavailable_to.to_s).and_return(i18n_error_string)
       end

@@ -3,6 +3,8 @@ class UserDeputiesController < ApplicationController
   before_filter :check_permission, :get_user, except: [:projects_for_user]
   before_filter :get_entry, except: [:index, :set_availabilities, :projects_for_user]
 
+  before_filter { prepend_view_path("#{Rails.root}/plugins/redmine_auto_deputy/app/views") }
+
   def index
     @users = User.with_deputy_permission(:be_deputy).where.not(id: @user.id).status(User::STATUS_ACTIVE)
     @projects = @user.projects_with_have_deputies_permission
@@ -60,6 +62,11 @@ class UserDeputiesController < ApplicationController
 
   def toggle_watch_issues
     @user_deputy.toggle! :auto_watch_project_issues
+    render status: 200, text: 'OK'
+  end
+
+  def toggle_inheritance
+    @user_deputy.toggle! :projects_inherit
     render status: 200, text: 'OK'
   end
 

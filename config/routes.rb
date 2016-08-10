@@ -12,6 +12,7 @@ RedmineApp::Application.routes.draw do
       post :set_permissions
       get  :projects_for_user
       post :toggle_watch_issues
+      post :toggle_inheritance
     end
   end
 end
