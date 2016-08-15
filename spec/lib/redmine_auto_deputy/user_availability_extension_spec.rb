@@ -41,6 +41,12 @@ RSpec.describe RedmineAutoDeputy::UserAvailabilityExtension do
       let(:user) { build_stubbed(:user) }
       specify { expect(user.available_at?(Time.now)).to be(true)}
     end
+
+    context 'only one day unavailable' do
+      let(:user) { build_stubbed(:user, unavailable_from: (Time.now+1.day).to_date, unavailable_to: (Time.now+1.day).to_date) }
+      specify { expect(user.available_at?(Time.now+1.day)).to be(false)}
+    end
+
   end
 
   describe '#validate_unavailabilities' do
