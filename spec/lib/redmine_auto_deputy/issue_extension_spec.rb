@@ -154,6 +154,17 @@ RSpec.describe RedmineAutoDeputy::IssueExtension do
 
     end
 
+    context 'only one day unavailable' do
+      let(:user)  { build_stubbed(:user, unavailable_from: (Time.now+1.day).to_date, unavailable_to: (Time.now+1.day).to_date) }
+      let(:issue) { build_stubbed(:issue, assigned_to: user, start_date: Time.now+1.day) }
+
+      before { expect(issue).to receive_message_chain(:project, :possible_project_id_for_deputies).and_return([1]) }
+
+      specify do
+        expect(issue.send(:check_assigned_user_availability)).to be(false)
+      end
+    end
+
   end
 
 end

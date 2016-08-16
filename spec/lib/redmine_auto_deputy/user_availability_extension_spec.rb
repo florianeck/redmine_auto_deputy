@@ -1,4 +1,5 @@
 require "spec_helper"
+require "timecop"
 RSpec.describe RedmineAutoDeputy::UserAvailabilityExtension do
 
   specify { expect(User.included_modules).to include(described_class)}
@@ -7,7 +8,6 @@ RSpec.describe RedmineAutoDeputy::UserAvailabilityExtension do
     let(:filter) { User._save_callbacks.select {|c| c.kind ==  :before && c.filter == :validate_unavailabilities }.first }
     specify { expect(filter).not_to be(nil) }
   end
-
 
   describe '#unavailablity_set?' do
     context 'nothing set' do
@@ -67,9 +67,10 @@ RSpec.describe RedmineAutoDeputy::UserAvailabilityExtension do
     end
 
     context 'unavailable_from in the past' do
-      let(:user) { build_stubbed(:user, unavailable_from: Time.now-2.day, unavailable_to: Time.now+1.day)}
+      let(:user) { create(:user)}
+
       specify do
-        expect(user.send(:validate_unavailabilities)).to be(false)
+        expect(user.update_attributes(unavailable_from: Time.now-2.day, unavailable_to: Time.now+1.day)).to be(false)
         expect(user.errors[:unavailable_to]).to eq([I18n.t('activerecord.errors.user.unavailable_dates_in_past')])
       end
     end
@@ -80,6 +81,40 @@ RSpec.describe RedmineAutoDeputy::UserAvailabilityExtension do
         expect(user.send(:validate_unavailabilities)).to be(false)
         expect(user.errors[:unavailable_to]).to eq([I18n.t('activerecord.errors.user.unavailable_to_before_from')])
       end
+    end
+
+    context 'only one day unavailable' do
+      let(:user) { build_stubbed(:user, unavailable_from: (Time.now+1.day).to_date, unavailable_to: (Time.now+1.day).to_date) }
+
+      specify do
+        expect(user.send(:validate_unavailabilities)).to be(true)
+      end
+    end
+  end
+
+  describe '#clear_expired_unavailability!' do
+
+    context 'add new availablitly in the past' do
+      let(:user) { create(:user) }
+
+      specify 'fails on validation' do
+        expect(user.update_attributes(unavailable_from: Time.now-1.day, unavailable_to: Time.now+1.day)).to be(false)
+        expect(user.errors[:unavailable_to]).to be_present
+      end
+    end
+
+    context 'user has expired_unavailability' do
+      let(:user) { create(:user, unavailable_from: Time.now, unavailable_to: Time.now+3.days) }
+
+      before { Timecop.travel(Time.now+10.days) }
+
+      specify do
+        expect(user.update_attributes(login: 'newlogin')).to be(true)
+        expect(user.reload.unavailable_from).to be(nil)
+        expect(user.reload.unavailable_to).to be(nil)
+      end
+
+      after { Timecop.return }
     end
 
   end
