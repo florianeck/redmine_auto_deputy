@@ -47,6 +47,11 @@ RSpec.describe RedmineAutoDeputy::UserAvailabilityExtension do
       specify { expect(user.available_at?(Time.now+1.day)).to be(false)}
     end
 
+    context 'only today unavailable' do
+      let(:user) { build_stubbed(:user, unavailable_from: (Time.now).to_date, unavailable_to: (Time.now).to_date) }
+      specify { expect(user.available_at?(Time.now)).to be(false)}
+    end
+
   end
 
   describe '#validate_unavailabilities' do
@@ -84,7 +89,7 @@ RSpec.describe RedmineAutoDeputy::UserAvailabilityExtension do
     end
 
     context 'only one day unavailable' do
-      let(:user) { build_stubbed(:user, unavailable_from: (Time.now+1.day).to_date, unavailable_to: (Time.now+1.day).to_date) }
+      let(:user) { build_stubbed(:user, unavailable_from: (Time.now).to_date, unavailable_to: (Time.now).to_date) }
 
       specify do
         expect(user.send(:validate_unavailabilities)).to be(true)
