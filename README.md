@@ -18,11 +18,11 @@ An user can have a set of other users that will act as deputies if the user not 
 In Order to use the Deputy System, the following things need to be set up:
 
 - Enable "User Deputies" Module for the Project
-- Assign the according rights (Have Deputies / Be Deuputy) to your project members via Roles
+- Assign the according rights (Have Deputies / Be Deputy) to your project members via Roles
 
 ## Info
 
-This Plugin was created by Florian Eck ([EL Digital Solutions](http://www.el-digital.de)) for [akquinet GmbH](http://www.akquinet.de/).
+This Plugin was created by Florian Eck ([EL Digital Solutions](http://www.el-digital.de)) for [akquinet finance & controlling GmbH](http://www.akquinet.de/).
 
 It is licensed under GNU GENERAL PUBLIC LICENSE.
 
