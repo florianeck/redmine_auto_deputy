@@ -27,6 +27,15 @@ RSpec.describe RedmineAutoDeputy::IssueExtension do
       end
     end
 
+    context 'assigned_to is not a User' do
+      let(:group) { Group.new }
+      let(:issue) { build_stubbed(:issue, assigned_to: group) }
+      specify do
+        expect(issue.send(:check_assigned_user_availability)).to be(nil)
+        expect(issue.assigned_to).to eq(group)
+      end
+    end
+
     context 'assigned_to User.current' do
       let(:issue) { build_stubbed(:issue, assigned_to: user) }
       let(:user)  { build_stubbed(:user)}
@@ -162,6 +171,24 @@ RSpec.describe RedmineAutoDeputy::IssueExtension do
 
       specify do
         expect(issue.send(:check_assigned_user_availability)).to be(false)
+      end
+    end
+
+    context 'Exception handling' do
+      let(:user) { build_stubbed(:user) }
+      let(:issue) { build_stubbed(:issue, assigned_to: user, id: 1) }
+      let(:error) { Exception.new(message: 'Bad thing happend') }
+
+      before do
+        expect(user).to receive(:available_at?).and_raise(error)
+        expect(error).to receive(:backtrace).and_return(['line 1', 'line 2']).at_least(:once)
+        expect(Rails.logger).to receive(:error).with("Failed to check_assigned_user_availability for Issue #1: #{error.message}")
+        expect(Rails.logger).to receive(:error).with(['line 1', 'line 2'].join("\n"))
+      end
+
+      specify do
+        expect{ issue.send(:check_assigned_user_availability) }.not_to raise_error
+        expect(issue.assigned_to).to eq(user)
       end
     end
 
