@@ -13,7 +13,7 @@ module RedmineAutoDeputy::UserDeputyExtension
   end
 
   def self.roles_for(permission_name)
-    Role.where("`roles`.`permissions` LIKE '%#{permission_name}%'")
+    Role.where("roles.permissions LIKE '%#{permission_name}%'")
   end
 
   def find_deputy(project_id: nil, already_tried: [self.id], date: Time.now.to_date)
