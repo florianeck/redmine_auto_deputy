@@ -20,10 +20,10 @@ group :development, :test do
 end
 
 group :test do
-  gem "simplecov", "~> 0.9.1", require: true
+  gem "simplecov", "~> 0.17.0", require: true
   gem 'factory_girl_rails'
   gem 'rspec-rails'
-  gem 'capybara'
+  gem 'capybara', '~> 3.25.0'
   gem 'database_cleaner'
   gem 'timecop'
 end
